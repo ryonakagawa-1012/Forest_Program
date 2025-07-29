@@ -30,6 +30,16 @@ public class Node extends Object {
 	 */
 	private Integer minY;
 
+	/*
+	 * ノードの横方向の辺の長さを保存する変数
+	 */
+	private Integer rectWidth;
+
+	/**
+	 * ノードの縦方向の辺の長さを保存する変数
+	 */
+	private Integer rectHeight;
+
 	/**
 	 * ノード情報を保持するためのインスタンスを生成するためのコンストラクタ
 	 */
@@ -106,6 +116,27 @@ public class Node extends Object {
 	 */
 	public void printNodeName() {
 		System.out.println(this.name + " clicked");
+	}
+
+	/**
+	 * 自身の名前を返すメソッド
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * 自身の横方向の辺の長さを返すメソッド
+	 */
+	public Integer getRectWidth() {
+		return this.rectWidth;
+	}
+
+	/**
+	 * 自身の縦方向の辺の長さを返すメソッド
+	 */
+	public Integer getRectHeight() {
+		return this.rectHeight;
 	}
 
 }
