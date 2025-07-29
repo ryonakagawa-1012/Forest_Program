@@ -34,70 +34,74 @@ public class Node extends Object {
 	 * ノード情報を保持するためのインスタンスを生成するためのコンストラクタ
 	 */
 	public Node(Integer x, Integer y, String name) {
-
+		this.x = x;
+		this.y = y;
+		this.name = name;
+		this.maxY = y; 
+		this.minY = y; 
 	}
 
 	/**
 	 * 自身のX座標を返すメソッド
 	 */
 	public Integer getX() {
-		return null;
+		return this.x;
 	}
 
 	/**
 	 * 自身のX座標を引数の値に変更するメソッド
 	 */
 	public void setX(Integer setterX) {
-
+		this.x = setterX;
 	}
 
 	/**
 	 * 自身のY座標を返すメソッド
 	 */
 	public Integer getY() {
-		return null;
+		return this.y;
 	}
 
 	/**
 	 * 自身のY座標を引数の値に変更するメソッド
 	 */
 	public void setY(Integer setterY) {
-
+		this.y = setterY;
 	}
 
 	/**
 	 * 自身のMaxY座標を返すメソッド
 	 */
 	public Integer getMaxY() {
-		return null;
+		return this.maxY;
 	}
 
 	/**
 	 * 自身のMaxY座標を引数の値に変更するメソッド
 	 */
 	public void setMaxY(Integer setterMaxY) {
-
+		this.maxY = setterMaxY;
 	}
 
 	/**
 	 * 自身のMinY座標を返すメソッド
 	 */
 	public Integer getMinY() {
-		return null;
+		return this.minY;
 	}
 
 	/**
 	 * 自身のMinY座標を引数の値に変更するメソッド
 	 */
-	public void setMixY(Integer setterMinY) {
-
+	public void setMinY(Integer setterMinY) {
+		this.minY = setterMinY;
 	}
 
 	/**
 	 * 自身のnameを標準出力に表示するメソッド
 	 */
 	public void printNodeName() {
-
+		System.out.println(this.name + " clicked");
 	}
 
 }
