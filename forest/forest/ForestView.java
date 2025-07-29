@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.util.Map;
 import java.util.List;
@@ -16,6 +17,13 @@ import javax.swing.JPanel;
 public class ForestView extends JPanel {
 
 	private ForestModel aModel;
+
+	// フォント設定: Serif系標準体12ポイント
+	private static final Font NODE_FONT = new Font(Font.SERIF, Font.PLAIN, 12);
+	
+	// ノード間隔設定
+	private static final int HORIZONTAL_SPACING = 25; // 横方向間隔（ノード間の最小距離）
+	private static final int VERTICAL_SPACING = 2;    // 縦方向間隔（ノードY座標のオフセット）
 
 
 	/**
@@ -70,6 +78,9 @@ public class ForestView extends JPanel {
 	private void drawEdges(Graphics g, Map<Integer, Node> nodeList) {
 		Graphics2D g2d = (Graphics2D) g;
 		
+		// フォントを設定
+		g2d.setFont(NODE_FONT);
+		
 		try {
 			// グラフの隣接リストを取得
 			Map<Integer, java.util.List<Integer>> adjacentList = aModel.getGraphAdjacentList();
@@ -96,7 +107,7 @@ public class ForestView extends JPanel {
 				
 				// 親ノードの右端中央の座標
 				int parentX = parentNode.getX() + parentRectWidth;
-				int parentY = parentNode.getY() + parentRectHeight / 2;
+				int parentY = parentNode.getY() + VERTICAL_SPACING + parentRectHeight / 2;
 				
 				// 各子ノードとの間に線を描画
 				for (Integer childId : children) {
@@ -104,13 +115,12 @@ public class ForestView extends JPanel {
 					if (childNode == null) continue;
 					
 					// 子ノードの描画情報を計算
-					String childName = getNodeName(childNode);
 					int childTextHeight = fm.getHeight();
 					int childRectHeight = childTextHeight + padding * 2;
 					
-					// 子ノードの左端中央の座標
+					// 子ノードの左端中央の座標（縦方向間隔を考慮）
 					int childX = childNode.getX();
-					int childY = childNode.getY() + childRectHeight / 2;
+					int childY = childNode.getY() + VERTICAL_SPACING + childRectHeight / 2;
 					
 					// 親から子へ線を描画
 					g2d.drawLine(parentX, parentY, childX, childY);
@@ -139,6 +149,20 @@ public class ForestView extends JPanel {
 	}
 
 	/**
+	 * ノード間の推奨間隔を取得するメソッド
+	 */
+	public int getHorizontalSpacing() {
+		return HORIZONTAL_SPACING;
+	}
+
+	/**
+	 * 縦方向の間隔を取得するメソッド
+	 */
+	public int getVerticalSpacing() {
+		return VERTICAL_SPACING;
+	}
+
+	/**
 	 * 個別のノードを描画するメソッド
 	 * ノードを四角形で囲まれた文字列として描画する
 	 */
@@ -146,6 +170,9 @@ public class ForestView extends JPanel {
 		if (node == null) return;
 		
 		Graphics2D g2d = (Graphics2D) g;
+		
+		// フォントを設定
+		g2d.setFont(NODE_FONT);
 		FontMetrics fm = g2d.getFontMetrics();
 		
 		// ノードの名前を取得
@@ -156,13 +183,13 @@ public class ForestView extends JPanel {
 		int textHeight = fm.getHeight();
 		
 		// 四角形のパディング
-		int padding = 5;
+		int padding = 3;
 		int rectWidth = textWidth + padding * 2;
 		int rectHeight = textHeight + padding * 2;
 		
-		// ノードの座標
+		// ノードの座標（縦方向間隔を考慮）
 		int x = node.getX();
-		int y = node.getY();
+		int y = node.getY() + VERTICAL_SPACING;
 		
 		// 四角形を描画（背景）
 		g2d.setColor(Color.WHITE);

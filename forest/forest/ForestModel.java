@@ -94,7 +94,7 @@ public class ForestModel extends Object {
 							String nodeName = parts[1];
 							// ノードの初期座標は15間隔にする
 							Node node = new Node(0, initialYGap, nodeName);
-							initialYGap += 15;
+							initialYGap += 20;
 							this.nodeList.put(nodeId, node);
 						} catch (NumberFormatException e) {
 							// ノード番号が数値でない場合はスキップ
