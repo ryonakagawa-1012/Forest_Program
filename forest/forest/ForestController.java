@@ -23,6 +23,10 @@ public class ForestController extends MouseInputAdapter {
 		
 		setModel();
 		setView();
+
+		aView.update();
+		aModel.nextNode();
+		aView.update();
 	}
 
 	public void mouseClicked(MouseEvent aMouseEvent) {
