@@ -66,7 +66,7 @@ public class ForestController extends MouseInputAdapter {
 	}
 
 	public void setModel() {
-		this.aModel = new ForestModel("resource/data/forest.txt");
+		this.aModel = new ForestModel("input.txt");
 	}
 
 	public void setView() {
