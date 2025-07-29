@@ -50,7 +50,6 @@ public class ForestModel extends Object {
 		for (Integer i = 0; i < this.visitedNodeList.length; i++) {
 			this.visitedNodeList[i] = false;
 		}
-
 	}
 
 	/**
@@ -132,7 +131,7 @@ public class ForestModel extends Object {
 	/**
 	 * 引数で受け取った座標が、ノードをクリックしているかを判定し、クリックしていたらNodeのprintNodeNameを呼び出すメソッド
 	 */
-	public void nodeCliked(Point aPoint) {
+	public void nodeClicked(Point aPoint) {
 
 	}
 
