@@ -42,6 +42,13 @@ public class ForestModel extends Object {
 	public ForestModel(String filePath) {
 		System.out.println("Hello from ForestModel!");
 		
+		initialize(filePath);
+	}
+
+	/** 
+	 * 樹状整列のモデルを初期化するメソッド
+	*/
+	public void initialize(String filePath) {
 		this.inputFile = new File(filePath);
 		makeNodeList();
 		makeGraphAdjacentList();
@@ -61,6 +68,7 @@ public class ForestModel extends Object {
 		try (BufferedReader reader = new BufferedReader(new FileReader(this.inputFile))) {
 			String line;
 			boolean inNodesSection = false;
+			Integer initialYGap = 0;
 
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
@@ -84,8 +92,9 @@ public class ForestModel extends Object {
 						try {
 							Integer nodeId = Integer.parseInt(parts[0]);
 							String nodeName = parts[1];
-							// ノードの初期座標は(0, 0)で設定
-							Node node = new Node(0, 0, nodeName);
+							// ノードの初期座標は15間隔にする
+							Node node = new Node(0, initialYGap, nodeName);
+							initialYGap += 15;
 							this.nodeList.put(nodeId, node);
 						} catch (NumberFormatException e) {
 							// ノード番号が数値でない場合はスキップ
