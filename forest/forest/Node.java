@@ -80,7 +80,9 @@ public class Node extends Object {
 	 * 自身のMaxY座標を引数の値に変更するメソッド
 	 */
 	public void setMaxY(Integer setterMaxY) {
-		this.maxY = setterMaxY;
+		if (setterMaxY > this.maxY) {
+			this.maxY = setterMaxY;
+		}
 	}
 
 	/**
@@ -94,7 +96,9 @@ public class Node extends Object {
 	 * 自身のMinY座標を引数の値に変更するメソッド
 	 */
 	public void setMinY(Integer setterMinY) {
-		this.minY = setterMinY;
+		if (setterMinY < this.minY) {
+			this.minY = setterMinY;
+		}
 	}
 
 	/**
