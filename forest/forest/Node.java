@@ -133,10 +133,24 @@ public class Node extends Object {
 	}
 
 	/**
+	 * 自身の横方向の辺の長さを引数の値に変更するメソッド
+	 */
+	public void setRectWidth(Integer setterRectWidth) {
+		this.rectWidth = setterRectWidth;
+	}
+
+	/**
 	 * 自身の縦方向の辺の長さを返すメソッド
 	 */
 	public Integer getRectHeight() {
 		return this.rectHeight;
+	}
+
+	/**
+	 * 自身の縦方向の辺の長さを引数の値に変更するメソッド
+	 */
+	public void setRectHeight(Integer setterRectHeight) {
+		this.rectHeight = setterRectHeight;
 	}
 
 }
