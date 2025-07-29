@@ -15,7 +15,9 @@ public class ForestView extends JPanel {
 	 * 樹状整列のビューのインスタンスを生成し、引数として受け取ったモデルのインスタンスをmodelに束縛するコンストラクタ
 	 */
 	public ForestView(ForestModel aModel) {
-
+		System.out.println("Hello from ForestView!");
+		
+		this.aModel = aModel;
 	}
 
 	/**
