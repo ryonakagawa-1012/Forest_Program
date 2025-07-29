@@ -135,4 +135,12 @@ public class ForestModel extends Object {
 
 	}
 
+	public Map<Integer, List<Integer>> getGraphAdjacentList() {
+		return this.graphAdjacentList;
+	}
+
+	public Map<Integer, Node> getNodeList() {
+		return this.nodeList;
+	}
+
 }
