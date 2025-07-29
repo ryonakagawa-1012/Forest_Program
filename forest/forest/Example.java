@@ -5,8 +5,8 @@ package forest;
  */
 public class Example extends Object {
 
-	public void main(String[] paramArrayOfString) {
-
+	public static void main(String[] paramArrayOfString) {
+		System.out.println("Hello, Forest!");
 	}
 
 }

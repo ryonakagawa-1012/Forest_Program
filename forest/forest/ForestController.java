@@ -14,7 +14,6 @@ public class ForestController extends MouseInputAdapter {
 
 	private ForestView aView;
 
-	private ForestModel forestModel;
 
 	/**
 	 * 樹状整列のコントローラのインスタンスを生成するためのコンストラクタ
