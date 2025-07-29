@@ -25,7 +25,7 @@ public class ForestController extends MouseInputAdapter {
 		setView();
 	}
 
-	public void mouseCliked(MouseEvent aMouseEvent) {
+	public void mouseClicked(MouseEvent aMouseEvent) {
 
 	}
 
