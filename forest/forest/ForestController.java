@@ -19,7 +19,10 @@ public class ForestController extends MouseInputAdapter {
 	 * 樹状整列のコントローラのインスタンスを生成するためのコンストラクタ
 	 */
 	public ForestController() {
-
+		System.out.println("Hello from ForestController!");
+		
+		setModel();
+		setView();
 	}
 
 	public void mouseCliked(MouseEvent aMouseEvent) {
@@ -55,11 +58,11 @@ public class ForestController extends MouseInputAdapter {
 	}
 
 	public void setModel() {
-
+		this.aModel = new ForestModel("input.txt");
 	}
 
-	public void setVeiw() {
-
+	public void setView() {
+		this.aView = new ForestView(this.aModel);
 	}
 
 }
