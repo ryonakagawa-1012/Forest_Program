@@ -31,7 +31,6 @@ public class ForestModel extends Object {
 
 	private File inputFile;
 
-	private ForestView forestView;
 
 	/**
 	 * 樹状整列のロジックを処理するモデルのインスタンスを生成するコンストラクタ
