@@ -15,6 +15,11 @@ public class Node extends Object {
 	 */
 	private Integer y;
 
+	/*
+	 * 親ノードのIdを保持する変数
+	 */
+	private Integer parentId;
+
 	/**
 	 * ノードの名前を保持する変数
 	 */
@@ -144,6 +149,20 @@ public class Node extends Object {
 	 */
 	public void setRectHeight(Integer setterRectHeight) {
 		this.rectHeight = setterRectHeight;
+	}
+
+	/**
+	 * 親ノードのIdを返すメソッド
+	 */
+	public Integer getParentId() {
+		return this.parentId;
+	}
+
+	/**
+	 * 親ノードのIdを引数の値に変更するメソッド
+	 */
+	public void setParentId(Integer setterParentId) {
+		this.parentId = setterParentId;
 	}
 
 }

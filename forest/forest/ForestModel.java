@@ -41,11 +41,6 @@ public class ForestModel extends Object {
 	private List<Integer> visitPath;
 
 	/*
-	 * nextNodeにおいて、前に訪れた頂点番号を保存する変数
-	 */
-	private Integer prevNodeId;
-
-	/*
 	 * 入力ファイルのパスを保持する変数
 	 */
 	private File inputFile;
@@ -69,6 +64,8 @@ public class ForestModel extends Object {
 		System.out.println("graphAdjacentList: " + this.graphAdjacentList);
 		makeRootList();
 		System.out.println("rootList: " + this.rootList);
+
+		addParentToNode();
 
 		// 深さ優先探索用の訪問セットを初期化
 		this.visitedNodeSet = new HashSet<>();
@@ -235,34 +232,46 @@ public class ForestModel extends Object {
 
 	}
 
+
+	/*
+	 * Nodeに親のIdを登録するメソッド
+	 */
+	public void addParentToNode(){
+		for (Map.Entry<Integer, List<Integer>> entry : this.graphAdjacentList.entrySet()){
+			for (Integer child : entry.getValue()){
+				Node childNode = nodeList.get(child);
+				childNode.setParentId(entry.getKey());
+			}
+		}
+	}
+
 	/**
 	 * Nodeを操作するメソッド
 	 */
 	public void nextNode(Integer nodeId) {
 		System.out.println(nodeId);
 		Node currentNode = nodeList.get(nodeId);
-		Node prevNode = nodeList.get(this.prevNodeId);
-		if (this.prevNodeId == null) {
-			prevNode = currentNode;
+
+		if (rootList.get(0) == nodeId) {
 			currentNode.setY(0);
 		} else {
-			System.out.println("prev" + prevNode.getName());
-			System.out.println("current" + currentNode.getName());
+			Node parentNode = nodeList.get(currentNode.getParentId());
 			if (this.rootList.contains(nodeId)) {
 				currentNode.setX(0);
 			}
-			if (this.graphAdjacentList.get(prevNodeId).contains(nodeId)) {
-				System.out.println("current" + currentNode.getName());
-				currentNode.setX(prevNode.getX() + prevNode.getRectWidth() + 25);
-				currentNode.setY(prevNode.getY());
+			if (true) {
+				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
+				currentNode.setY(parentNode.getY());
+
+				currentNode.setMaxY(parentNode.getMaxY());
+				currentNode.setMinY(parentNode.getMinY());
 			} else {
-				currentNode.setMaxY(prevNode.getMaxY());
-				currentNode.setMinY(prevNode.getMinY());
+				currentNode.setMaxY(parentNode.getMaxY());
+				currentNode.setMinY(parentNode.getMinY());
 				Integer setterY = (currentNode.getMaxY() + currentNode.getMinY()) / 2;
 				currentNode.setY(setterY);
 			}
 		}
-		prevNodeId = nodeId;
 	}
 
 	/**
@@ -289,8 +298,7 @@ public class ForestModel extends Object {
 		visitPath.add(nodeId);
 		for (Integer childId : graphAdjacentList.get(nodeId)) {
 			dfs(childId);
-			// 戻る時に親ノードを追加
-			visitPath.add(nodeId);
+
 		}
 	}
 
