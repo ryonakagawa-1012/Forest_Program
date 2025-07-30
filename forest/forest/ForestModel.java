@@ -21,9 +21,9 @@ public class ForestModel extends Object {
 	private Map<Integer, List<Integer>> graphAdjacentList;
 
 	/**
-	 * 入力として与えられた木構造の親ノードの番号を保持する配列
+	 * 入力として与えられた木構造の根ノードの番号を保持する配列
 	 */
-	private Integer[] parentList;
+	private List<Integer> rootList;
 
 	/**
 	 * ノード番号とNode型で保持している型情報を紐づけるための連想配列
@@ -42,19 +42,20 @@ public class ForestModel extends Object {
 	 */
 	public ForestModel(String filePath) {
 		System.out.println("Hello from ForestModel!");
-		
+
 		initialize(filePath);
 	}
 
-	/** 
+	/**
 	 * 樹状整列のモデルを初期化するメソッド
 	 */
 	public void initialize(String filePath) {
 		this.inputFile = new File(filePath);
 		makeNodeList();
 		makeGraphAdjacentList();
-		System.out.println(this.graphAdjacentList);
-		makeParentList();
+		System.out.println("graphAdjacentList: " + this.graphAdjacentList);
+		makeRootList();
+		System.out.println("rootList: " + this.rootList);
 		this.visitedNodeList = new Boolean[this.nodeList.size()];
 		for (Integer i = 0; i < this.visitedNodeList.length; i++) {
 			this.visitedNodeList[i] = false;
@@ -170,8 +171,53 @@ public class ForestModel extends Object {
 	 * inputFileを元に
 	 * parentListの値を決定するメソッド
 	 */
-	public void makeParentList() {
+	public void makeRootList() {
+		this.rootList = new ArrayList<Integer>();
 
+		// 根ノード名のリスト（出現順）
+		List<String> rootNodeNames = new ArrayList<String>();
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(this.inputFile))) {
+			String line;
+			boolean inTreesSection = false;
+
+			while ((line = reader.readLine()) != null) {
+				String trimmedLine = line.trim();
+
+				// セクション判定
+				if (trimmedLine.equals("trees:")) {
+					inTreesSection = true;
+					continue;
+				} else if (trimmedLine.equals("nodes:")) {
+					inTreesSection = false;
+					continue;
+				} else if (trimmedLine.equals("branches:")) {
+					break;
+				}
+
+				// trees:セクション処理
+				if (inTreesSection && !line.isEmpty()) {
+					if (!line.startsWith("|") && !line.startsWith(" ")) {
+						rootNodeNames.add(trimmedLine);
+					}
+				}
+			}
+		} catch (IOException e) {
+			System.err.println("Error reading file: " + e.getMessage());
+		}
+
+		System.out.println("rootNodeNames: " + rootNodeNames);
+
+		// 根ノード名とノードIDを対応付け
+		for (Map.Entry<Integer, Node> entry : this.nodeList.entrySet()) {
+			for (String rootName : rootNodeNames) {
+				if (entry.getValue().getName().equals(rootName)) {
+					this.rootList.add(entry.getKey());
+					break; 
+				}
+			}
+		}
+	
 	}
 
 	/**
