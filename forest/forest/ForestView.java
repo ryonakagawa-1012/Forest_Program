@@ -1,6 +1,5 @@
 package forest;
 
-import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -8,8 +7,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Dimension;
 import java.util.Map;
-import java.util.List;
-import java.lang.reflect.Field;
 import javax.swing.JPanel;
 
 /**
@@ -34,6 +31,9 @@ public class ForestView extends JPanel {
 		System.out.println("Hello from ForestView!");
 		
 		this.aModel = aModel;
+		
+		// 初期化時にノードサイズを計算して設定
+		initializeNodeSizes();
 	}
 
 	/**
@@ -65,15 +65,21 @@ public class ForestView extends JPanel {
 			int minX = Integer.MAX_VALUE;
 			int minY = Integer.MAX_VALUE;
 			
-			FontMetrics fm = getFontMetrics(NODE_FONT);
-			
 			for (Node node : nodeList.values()) {
-				String nodeName = getNodeName(node);
-				int textWidth = fm.stringWidth(nodeName);
-				int textHeight = fm.getHeight();
-				int padding = 3; // drawNodeメソッドと同じpadding値を使用
-				int rectWidth = textWidth + padding * 2;
-				int rectHeight = textHeight + padding * 2;
+				// Nodeオブジェクトから事前計算されたサイズを取得
+				Integer rectWidth = node.getRectWidth();
+				Integer rectHeight = node.getRectHeight();
+				
+				// サイズが設定されていない場合のフォールバック
+				if (rectWidth == null || rectHeight == null) {
+					FontMetrics fm = getFontMetrics(NODE_FONT);
+					String nodeName = getNodeName(node);
+					int textWidth = fm.stringWidth(nodeName);
+					int textHeight = fm.getHeight();
+					int padding = 3;
+					rectWidth = textWidth + padding * 2;
+					rectHeight = textHeight + padding * 2;
+				}
 				
 				// ノードの実際の描画位置
 				int nodeX = node.getX();
@@ -177,14 +183,20 @@ public class ForestView extends JPanel {
 				Node parentNode = nodeList.get(parentId);
 				if (parentNode == null || children == null) continue;
 				
-				// 親ノードの描画情報を計算
-				String parentName = getNodeName(parentNode);
-				FontMetrics fm = g2d.getFontMetrics();
-				int parentTextWidth = fm.stringWidth(parentName);
-				int parentTextHeight = fm.getHeight();
-				int padding = 5;
-				int parentRectWidth = parentTextWidth + padding * 2;
-				int parentRectHeight = parentTextHeight + padding * 2;
+				// 親ノードの描画情報をNodeオブジェクトから取得
+				Integer parentRectWidth = parentNode.getRectWidth();
+				Integer parentRectHeight = parentNode.getRectHeight();
+				
+				// サイズが設定されていない場合のフォールバック
+				if (parentRectWidth == null || parentRectHeight == null) {
+					String parentName = getNodeName(parentNode);
+					FontMetrics fm = g2d.getFontMetrics();
+					int parentTextWidth = fm.stringWidth(parentName);
+					int parentTextHeight = fm.getHeight();
+					int padding = 3;
+					parentRectWidth = parentTextWidth + padding * 2;
+					parentRectHeight = parentTextHeight + padding * 2;
+				}
 				
 				// 親ノードの右端中央の座標
 				int parentX = parentNode.getX() + parentRectWidth;
@@ -195,9 +207,16 @@ public class ForestView extends JPanel {
 					Node childNode = nodeList.get(childId);
 					if (childNode == null) continue;
 					
-					// 子ノードの描画情報を計算
-					int childTextHeight = fm.getHeight();
-					int childRectHeight = childTextHeight + padding * 2;
+					// 子ノードの描画情報をNodeオブジェクトから取得
+					Integer childRectHeight = childNode.getRectHeight();
+					
+					// サイズが設定されていない場合のフォールバック
+					if (childRectHeight == null) {
+						FontMetrics fm = g2d.getFontMetrics();
+						int childTextHeight = fm.getHeight();
+						int padding = 3;
+						childRectHeight = childTextHeight + padding * 2;
+					}
 					
 					// 子ノードの左端中央の座標（縦方向間隔を考慮）
 					int childX = childNode.getX();
@@ -216,17 +235,42 @@ public class ForestView extends JPanel {
 	 * ノードの名前を取得するヘルパーメソッド
 	 */
 	private String getNodeName(Node node) {
-		try {
-			Field nameField = node.getClass().getDeclaredField("name");
-			nameField.setAccessible(true);
-			Object nameValue = nameField.get(node);
-			if (nameValue instanceof String) {
-				return (String) nameValue;
-			}
-		} catch (Exception e) {
-			// フィールドアクセスに失敗した場合はデフォルト名を使用
+		// Nodeクラスに追加されたgetName()メソッドを使用
+		if (node.getName() != null) {
+			return node.getName();
 		}
 		return "Node";
+	}
+
+	/**
+	 * 初期化時に全ノードのサイズを計算してNodeオブジェクトに設定するメソッド
+	 */
+	private void initializeNodeSizes() {
+		if (aModel == null) return;
+		
+		try {
+			Map<Integer, Node> nodeList = aModel.getNodeList();
+			if (nodeList == null || nodeList.isEmpty()) return;
+			
+			FontMetrics fm = getFontMetrics(NODE_FONT);
+			int padding = 3;
+			
+			for (Node node : nodeList.values()) {
+				String nodeName = getNodeName(node);
+				int textWidth = fm.stringWidth(nodeName);
+				int textHeight = fm.getHeight();
+				
+				int rectWidth = textWidth + padding * 2;
+				int rectHeight = textHeight + padding * 2;
+				
+				// Nodeオブジェクトにサイズを設定
+				node.setRectWidth(rectWidth);
+				node.setRectHeight(rectHeight);
+			}
+		} catch (Exception e) {
+			// 初期化時にエラーが発生した場合はサイズ情報なしで続行
+			System.err.println("ノードサイズの初期化でエラーが発生しました: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -259,14 +303,18 @@ public class ForestView extends JPanel {
 		// ノードの名前を取得
 		String nodeName = getNodeName(node);
 		
-		// 文字列のサイズを測定
-		int textWidth = fm.stringWidth(nodeName);
-		int textHeight = fm.getHeight();
+		// Nodeオブジェクトから事前計算されたサイズを取得
+		Integer rectWidth = node.getRectWidth();
+		Integer rectHeight = node.getRectHeight();
 		
-		// 四角形のパディング
-		int padding = 3;
-		int rectWidth = textWidth + padding * 2;
-		int rectHeight = textHeight + padding * 2;
+		// サイズが設定されていない場合のフォールバック
+		if (rectWidth == null || rectHeight == null) {
+			int textWidth = fm.stringWidth(nodeName);
+			int textHeight = fm.getHeight();
+			int padding = 3;
+			rectWidth = textWidth + padding * 2;
+			rectHeight = textHeight + padding * 2;
+		}
 		
 		// ノードの座標（縦方向間隔を考慮）
 		int x = node.getX();
@@ -280,9 +328,12 @@ public class ForestView extends JPanel {
 		g2d.setColor(Color.BLACK);
 		g2d.drawRect(x, y, rectWidth, rectHeight);
 		
-		// 文字列を描画
+		// 文字列を描画（中央配置）
 		g2d.setColor(Color.BLACK);
-		g2d.drawString(nodeName, x + padding, y + padding + fm.getAscent());
+		int textWidth = fm.stringWidth(nodeName);
+		int textX = x + (rectWidth - textWidth) / 2;
+		int textY = y + (rectHeight + fm.getAscent() - fm.getDescent()) / 2;
+		g2d.drawString(nodeName, textX, textY);
 	}
 
 }
