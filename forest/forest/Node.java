@@ -112,13 +112,6 @@ public class Node extends Object {
 	}
 
 	/**
-	 * 自身のnameを標準出力に表示するメソッド
-	 */
-	public void printNodeName() {
-		System.out.println(this.name + " clicked");
-	}
-
-	/**
 	 * 自身の名前を返すメソッド
 	 */
 	public String getName() {
