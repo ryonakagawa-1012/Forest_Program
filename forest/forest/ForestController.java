@@ -37,7 +37,11 @@ public class ForestController extends MouseInputAdapter {
 	}
 
 	public void mouseClicked(MouseEvent aMouseEvent) {
-
+		// マウスクリック座標を取得
+		Point clickPoint = aMouseEvent.getPoint();
+		
+		// ForestModelのnodeClickedメソッドを呼び出し
+		this.aModel.nodeClicked(clickPoint);
 	}
 
 	public void mouseDragged(MouseEvent aMouseEvent) {
