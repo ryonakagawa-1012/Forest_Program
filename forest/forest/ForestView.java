@@ -141,13 +141,13 @@ public class ForestView extends JPanel {
 					Graphics2D g2d = (Graphics2D) g.create();
 					g2d.translate(offsetX, offsetY);
 					
-					// 1. まず親子関係の線を描画
-					drawEdges(g2d, nodeList);
-					
-					// 2. その後にノードを描画（線の上に重ねる）
+					// 1. まずノードを描画（背面）
 					for (Node node : nodeList.values()) {
 						drawNode(g2d, node);
 					}
+					
+					// 2. その後に親子関係の線を描画（最前面に配置）
+					drawEdges(g2d, nodeList);
 					
 					g2d.dispose();
 				}
