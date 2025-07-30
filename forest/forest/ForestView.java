@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Dimension;
 import java.util.Map;
 import java.util.List;
 import java.lang.reflect.Field;
@@ -40,6 +41,69 @@ public class ForestView extends JPanel {
 	 */
 	public void update() {
 		repaint(); // 画面の再描画を行う
+		revalidate(); // スクロールバーのサイズ更新のため
+	}
+
+	/**
+	 * スクロール可能領域のサイズを計算するメソッド
+	 */
+	@Override
+	public Dimension getPreferredSize() {
+		if (aModel == null) {
+			return new Dimension(400, 300); // より小さなデフォルトサイズ
+		}
+		
+		try {
+			Map<Integer, Node> nodeList = aModel.getNodeList();
+			if (nodeList == null || nodeList.isEmpty()) {
+				return new Dimension(400, 300); // より小さなデフォルトサイズ
+			}
+			
+			// 全ノードの位置から必要な描画領域を正確に計算
+			int maxX = Integer.MIN_VALUE;
+			int maxY = Integer.MIN_VALUE;
+			int minX = Integer.MAX_VALUE;
+			int minY = Integer.MAX_VALUE;
+			
+			FontMetrics fm = getFontMetrics(NODE_FONT);
+			
+			for (Node node : nodeList.values()) {
+				String nodeName = getNodeName(node);
+				int textWidth = fm.stringWidth(nodeName);
+				int textHeight = fm.getHeight();
+				int padding = 3; // drawNodeメソッドと同じpadding値を使用
+				int rectWidth = textWidth + padding * 2;
+				int rectHeight = textHeight + padding * 2;
+				
+				// ノードの実際の描画位置
+				int nodeX = node.getX();
+				int nodeY = node.getY() + VERTICAL_SPACING;
+				
+				// ノードの範囲を更新
+				minX = Math.min(minX, nodeX);
+				minY = Math.min(minY, nodeY);
+				maxX = Math.max(maxX, nodeX + rectWidth);
+				maxY = Math.max(maxY, nodeY + rectHeight);
+			}
+			
+			// ノードが存在しない場合の処理
+			if (minX == Integer.MAX_VALUE) {
+				return new Dimension(100, 80);
+			}
+			
+			// 実際に必要なサイズを計算（マージンなし、ノードの境界にぴったり）
+			int width = maxX - minX;
+			int height = maxY - minY;
+			
+			// 最小サイズの制限を緩和
+			width = Math.max(100, width);
+			height = Math.max(80, height);
+			
+			return new Dimension(width, height);
+			
+		} catch (Exception e) {
+			return new Dimension(100, 80); // エラー時はデフォルトサイズ
+		}
 	}
 
 	/**
@@ -51,23 +115,40 @@ public class ForestView extends JPanel {
 		
 		if (aModel != null) {
 			// モデルからnodeListを取得してノードを描画
-			// 注意: getNodeList()メソッドがForestModelに追加される予定
 			try {
 				Map<Integer, Node> nodeList = aModel.getNodeList();
 				if (nodeList != null) {
+					// 最小座標を取得して描画位置を正規化
+					int minX = Integer.MAX_VALUE;
+					int minY = Integer.MAX_VALUE;
+					
+					for (Node node : nodeList.values()) {
+						minX = Math.min(minX, node.getX());
+						minY = Math.min(minY, node.getY() + VERTICAL_SPACING);
+					}
+					
+					// 最小座標を原点に調整するためのオフセット
+					final int offsetX = (minX != Integer.MAX_VALUE) ? -minX : 0;
+					final int offsetY = (minY != Integer.MAX_VALUE) ? -minY : 0;
+					
+					// Graphics2Dに変換してオフセットを適用
+					Graphics2D g2d = (Graphics2D) g.create();
+					g2d.translate(offsetX, offsetY);
+					
 					// 1. まず親子関係の線を描画
-					drawEdges(g, nodeList);
+					drawEdges(g2d, nodeList);
 					
 					// 2. その後にノードを描画（線の上に重ねる）
 					for (Node node : nodeList.values()) {
-						drawNode(g, node);
+						drawNode(g2d, node);
 					}
+					
+					g2d.dispose();
 				}
 			} catch (Exception e) {
-				// getNodeList()メソッドがまだ実装されていない場合
-				// エラーメッセージを表示
+				// エラー時はエラーメッセージを表示
 				g.setColor(Color.RED);
-				g.drawString("getNodeList()メソッドがForestModelに実装されていません", 10, 20);
+				g.drawString("描画エラー: " + e.getMessage(), 10, 20);
 			}
 		}
 	}

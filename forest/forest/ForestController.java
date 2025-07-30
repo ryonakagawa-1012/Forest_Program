@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.event.MouseWheelListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import java.awt.event.MouseEvent;
 
 /**
@@ -16,6 +17,8 @@ public class ForestController extends MouseInputAdapter {
 	private ForestView aView;
 
 	private JFrame aFrame;
+
+	private JScrollPane aScrollPane;
 
 
 	/**
@@ -71,12 +74,27 @@ public class ForestController extends MouseInputAdapter {
 
 	public void setView() {
 		this.aView = new ForestView(this.aModel);
+		// マウスイベントリスナーを設定
+		this.aView.addMouseListener(this);
+		this.aView.addMouseMotionListener(this);
 	}
 
 	public void setFrame() {
+		// JScrollPaneを作成してForestViewをラップ
+		this.aScrollPane = new JScrollPane(this.aView);
+		
+		// スクロールポリシーを設定
+		this.aScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.aScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
+		// スクロール速度を調整
+		this.aScrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+		this.aScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		
+		// JFrameを設定
 		this.aFrame = new JFrame("Forest Viewer");
 		this.aFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.aFrame.add(this.aView);
+		this.aFrame.add(this.aScrollPane); // ForestViewの代わりにJScrollPaneを追加
 		this.aFrame.setSize(800, 600);
 		this.aFrame.setLocationRelativeTo(null); // 画面中央に表示
 		this.aFrame.setVisible(true);
