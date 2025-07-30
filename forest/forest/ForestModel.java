@@ -249,4 +249,8 @@ public class ForestModel extends Object {
 		return this.nodeList;
 	}
 
+	public List<Integer> getRootList() {
+		return this.rootList;
+	}
+
 }
