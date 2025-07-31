@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
+import javax.swing.JOptionPane;
 
 /**
  * 樹状整列のプログラムを管理するためのモデルクラス
@@ -26,6 +27,8 @@ public class ForestController extends MouseInputAdapter {
 
 	private JPopupMenu popupMenu;
 
+	private int animationDelay = 100; // アニメーション間隔（ミリ秒）
+
 
 	/**
 	 * 樹状整列のコントローラのインスタンスを生成するためのコンストラクタ
@@ -40,7 +43,7 @@ public class ForestController extends MouseInputAdapter {
 
 		for (Integer nextNodeId: aModel.getvisitPath()){
 			try {
-				Thread.sleep(100);
+				Thread.sleep(animationDelay);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
@@ -94,6 +97,18 @@ public class ForestController extends MouseInputAdapter {
 	private void initializePopupMenu() {
 		popupMenu = new JPopupMenu();
 		
+		// アニメーション速度設定メニューアイテム
+		JMenuItem speedItem = new JMenuItem("アニメーション速度設定 (現在: " + animationDelay + "ms)");
+		speedItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setAnimationSpeed();
+			}
+		});
+		popupMenu.add(speedItem);
+		
+		popupMenu.addSeparator(); // 区切り線を追加
+		
 		// forest.txtメニューアイテム
 		JMenuItem forestItem = new JMenuItem("forest.txt");
 		forestItem.addActionListener(new ActionListener() {
@@ -123,6 +138,60 @@ public class ForestController extends MouseInputAdapter {
 			}
 		});
 		popupMenu.add(treeItem);
+	}
+
+	/**
+	 * アニメーション速度を設定するメソッド
+	 */
+	private void setAnimationSpeed() {
+		String input = JOptionPane.showInputDialog(
+			aFrame,
+			"アニメーション速度を入力してください（ミリ秒）:\n" +
+			"小さい値 = 速い, 大きい値 = 遅い\n" +
+			"推奨範囲: 10-1000",
+			"アニメーション速度設定",
+			JOptionPane.QUESTION_MESSAGE
+		);
+		
+		if (input != null && !input.trim().isEmpty()) {
+			try {
+				int newDelay = Integer.parseInt(input.trim());
+				if (newDelay >= 1 && newDelay <= 5000) {
+					animationDelay = newDelay;
+					// メニューの表示も更新
+					updatePopupMenu();
+					JOptionPane.showMessageDialog(
+						aFrame,
+						"アニメーション速度を " + animationDelay + "ms に設定しました",
+						"設定完了",
+						JOptionPane.INFORMATION_MESSAGE
+					);
+				} else {
+					JOptionPane.showMessageDialog(
+						aFrame,
+						"1から5000の間の値を入力してください",
+						"入力エラー",
+						JOptionPane.ERROR_MESSAGE
+					);
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(
+					aFrame,
+					"数値を入力してください",
+					"入力エラー",
+					JOptionPane.ERROR_MESSAGE
+				);
+			}
+		}
+	}
+
+	/**
+	 * ポップアップメニューの表示を更新するメソッド
+	 */
+	private void updatePopupMenu() {
+		// 既存のメニューを削除して再作成
+		popupMenu.removeAll();
+		initializePopupMenu();
 	}
 
 	/**
@@ -167,7 +236,7 @@ public class ForestController extends MouseInputAdapter {
 		new Thread(() -> {
 			for (Integer nextNodeId : newModel.getvisitPath()) {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(animationDelay);
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 					break;
