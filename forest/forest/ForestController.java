@@ -11,6 +11,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * 樹状整列のプログラムを管理するためのモデルクラス
@@ -97,15 +105,50 @@ public class ForestController extends MouseInputAdapter {
 	private void initializePopupMenu() {
 		popupMenu = new JPopupMenu();
 		
-		// アニメーション速度設定メニューアイテム
-		JMenuItem speedItem = new JMenuItem("アニメーション速度設定 (現在: " + animationDelay + "ms)");
-		speedItem.addActionListener(new ActionListener() {
+		// アニメーション速度設定パネル
+		JPanel speedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JLabel speedLabel = new JLabel("速度(ms):");
+		JTextField speedField = new JTextField(String.valueOf(animationDelay), 8);
+		
+		// Enterキーで設定を適用
+		speedField.addKeyListener(new KeyListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				setAnimationSpeed();
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					String inputValue = speedField.getText();
+					// まずメニューを閉じる
+					popupMenu.setVisible(false);
+					// その後で設定を更新（メニューの再作成を含む）
+					javax.swing.SwingUtilities.invokeLater(() -> {
+						updateAnimationSpeed(inputValue);
+					});
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {}
+			@Override
+			public void keyTyped(KeyEvent e) {}
+		});
+		
+		// フォーカスが外れた時の処理
+		speedField.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				// フォーカスを得た時は何もしない
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				// フォーカスを失った時に値を更新（メニューを閉じる必要はない）
+				String inputValue = speedField.getText();
+				javax.swing.SwingUtilities.invokeLater(() -> {
+					updateAnimationSpeedSilent(inputValue);
+				});
 			}
 		});
-		popupMenu.add(speedItem);
+		
+		speedPanel.add(speedLabel);
+		speedPanel.add(speedField);
+		popupMenu.add(speedPanel);
 		
 		popupMenu.addSeparator(); // 区切り線を追加
 		
@@ -141,18 +184,9 @@ public class ForestController extends MouseInputAdapter {
 	}
 
 	/**
-	 * アニメーション速度を設定するメソッド
+	 * アニメーション速度を更新するメソッド
 	 */
-	private void setAnimationSpeed() {
-		String input = JOptionPane.showInputDialog(
-			aFrame,
-			"アニメーション速度を入力してください（ミリ秒）:\n" +
-			"小さい値 = 速い, 大きい値 = 遅い\n" +
-			"推奨範囲: 10-1000",
-			"アニメーション速度設定",
-			JOptionPane.QUESTION_MESSAGE
-		);
-		
+	private void updateAnimationSpeed(String input) {
 		if (input != null && !input.trim().isEmpty()) {
 			try {
 				int newDelay = Integer.parseInt(input.trim());
@@ -160,27 +194,52 @@ public class ForestController extends MouseInputAdapter {
 					animationDelay = newDelay;
 					// メニューの表示も更新
 					updatePopupMenu();
-					JOptionPane.showMessageDialog(
-						aFrame,
-						"アニメーション速度を " + animationDelay + "ms に設定しました",
-						"設定完了",
-						JOptionPane.INFORMATION_MESSAGE
-					);
+					// 確認メッセージを表示（オプション）
+					// JOptionPane.showMessageDialog(
+					//     aFrame,
+					//     "アニメーション速度を " + animationDelay + "ms に設定しました",
+					//     "設定完了",
+					//     JOptionPane.INFORMATION_MESSAGE
+					// );
 				} else {
+					// エラーダイアログを表示してからメニューを閉じる
+					javax.swing.SwingUtilities.invokeLater(() -> {
+						JOptionPane.showMessageDialog(
+							aFrame,
+							"1から5000の間の値を入力してください",
+							"入力エラー",
+							JOptionPane.ERROR_MESSAGE
+						);
+					});
+				}
+			} catch (NumberFormatException e) {
+				// エラーダイアログを表示してからメニューを閉じる
+				javax.swing.SwingUtilities.invokeLater(() -> {
 					JOptionPane.showMessageDialog(
 						aFrame,
-						"1から5000の間の値を入力してください",
+						"数値を入力してください",
 						"入力エラー",
 						JOptionPane.ERROR_MESSAGE
 					);
+				});
+			}
+		}
+	}
+
+	/**
+	 * アニメーション速度を静かに更新するメソッド（エラーメッセージなし）
+	 */
+	private void updateAnimationSpeedSilent(String input) {
+		if (input != null && !input.trim().isEmpty()) {
+			try {
+				int newDelay = Integer.parseInt(input.trim());
+				if (newDelay >= 1 && newDelay <= 5000) {
+					animationDelay = newDelay;
+					// メニューの表示も更新
+					updatePopupMenu();
 				}
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(
-					aFrame,
-					"数値を入力してください",
-					"入力エラー",
-					JOptionPane.ERROR_MESSAGE
-				);
+				// エラーの場合は何もしない
 			}
 		}
 	}
