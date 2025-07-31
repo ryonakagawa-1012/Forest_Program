@@ -15,6 +15,11 @@ public class Node extends Object {
 	 */
 	private Integer y;
 
+	/*
+	 * 親ノードのIdを保持する変数
+	 */
+	private Integer parentId;
+
 	/**
 	 * ノードの名前を保持する変数
 	 */
@@ -112,13 +117,6 @@ public class Node extends Object {
 	}
 
 	/**
-	 * 自身のnameを標準出力に表示するメソッド
-	 */
-	public void printNodeName() {
-		System.out.println(this.name + " clicked");
-	}
-
-	/**
 	 * 自身の名前を返すメソッド
 	 */
 	public String getName() {
@@ -151,6 +149,20 @@ public class Node extends Object {
 	 */
 	public void setRectHeight(Integer setterRectHeight) {
 		this.rectHeight = setterRectHeight;
+	}
+
+	/**
+	 * 親ノードのIdを返すメソッド
+	 */
+	public Integer getParentId() {
+		return this.parentId;
+	}
+
+	/**
+	 * 親ノードのIdを引数の値に変更するメソッド
+	 */
+	public void setParentId(Integer setterParentId) {
+		this.parentId = setterParentId;
 	}
 
 }

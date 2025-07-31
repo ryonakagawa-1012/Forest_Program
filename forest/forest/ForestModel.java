@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * 木構造のデータを管理するためのモデルクラス
@@ -31,30 +33,18 @@ public class ForestModel extends Object {
 	private Map<Integer, Node> nodeList;
 
 	/**
-	 * 主にdepthFirstSearchメソッド内で使用する、ノードが深さ優先探索で探索済みかどうかを保持する配列
+	 * 深さ優先探索で訪問済みノードを保持するセット
 	 */
-	private Boolean[] visitedNodeList;
+	private Set<Integer> visitedNodeSet;
 
-	/**
-	 * 深さ優先探索で使用するスタック
-	 */
-	private List<Integer> dfsStack;
 
-	/**
-	 * 現在の根ノードのインデックス
-	 */
-	private Integer currentRootIndex;
-
-	/**
-	 * 深さ優先探索の訪問経路を記録するスタック（戻り処理用）
-	 */
 	private List<Integer> visitPath;
 
-	/**
-	 * 現在が戻り処理中かどうかを示すフラグ
-	 */
-	private boolean isBacktracking;
+	private Integer prevNodeId;
 
+	/*
+	 * 入力ファイルのパスを保持する変数
+	 */
 	private File inputFile;
 
 	/**
@@ -76,25 +66,14 @@ public class ForestModel extends Object {
 		System.out.println("graphAdjacentList: " + this.graphAdjacentList);
 		makeRootList();
 		System.out.println("rootList: " + this.rootList);
-		this.visitedNodeList = new Boolean[this.nodeList.size()];
-		for (Integer i = 0; i < this.visitedNodeList.length; i++) {
-			this.visitedNodeList[i] = false;
-		}
 
-		// 深さ優先探索の初期化
-		this.dfsStack = new ArrayList<Integer>();
-		this.visitPath = new ArrayList<Integer>();
-		this.currentRootIndex = 0;
-		this.isBacktracking = false;
+		addParentToNode();
 
-		// 最初の根ノードをスタックにプッシュ
-		if (!this.rootList.isEmpty()) {
-			this.dfsStack.add(this.rootList.get(0));
-		}
+		// 深さ優先探索用の訪問セットを初期化
+		this.visitedNodeSet = new HashSet<>();
+		depthFirstSearch();
+		System.out.println("visitPath: " + this.visitPath);
 
-		for (int i = 0; i < 200; i++) {
-			System.out.println(depthFirstSearch());
-		}
 	}
 
 	/**
@@ -255,108 +234,76 @@ public class ForestModel extends Object {
 
 	}
 
-	/**
-	 * depthFirstSearchを呼び出し、Nodeを操作するメソッド
+
+	/*
+	 * Nodeに親のIdを登録するメソッド
 	 */
-	public Node nextNode() {
-		Integer nodeId = depthFirstSearch();
-		if (nodeId != null) {
-			return nodeList.get(nodeId);
+	public void addParentToNode(){
+		for (Map.Entry<Integer, List<Integer>> entry : this.graphAdjacentList.entrySet()){
+			for (Integer child : entry.getValue()){
+				Node childNode = nodeList.get(child);
+				childNode.setParentId(entry.getKey());
+			}
 		}
-		return null;
 	}
 
 	/**
-	 * 深さ優先探索をし、次に訪れるノード番号を返すメソッド
+	 * Nodeを操作するメソッド
 	 */
-	public Integer depthFirstSearch() {
-		// 戻り処理中の場合
-		if (this.isBacktracking) {
-			if (!this.visitPath.isEmpty()) {
-				// 訪問経路から最後の要素を削除して戻る
-				Integer backNode = this.visitPath.remove(this.visitPath.size() - 1);
+	public void nextNode(Integer nodeId) {
+		System.out.println(nodeId);
+		Node currentNode = nodeList.get(nodeId);
 
-				// 根ノードまで戻った場合は戻り処理終了
-				if (this.visitPath.isEmpty() || this.rootList.contains(backNode)) {
-					this.isBacktracking = false;
-				}
+		if (this.prevNodeId == null) {
+			currentNode.setY(0);
+			prevNodeId = nodeId;
+		} else {
+			Integer parentNodeId = currentNode.getParentId();
+			Node parentNode = nodeList.get(parentNodeId);
+			if (this.rootList.contains(nodeId)) {
+				currentNode.setX(0);
+			}
+			if (prevNodeId.equals(parentNodeId)) {
+				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
+				currentNode.setY(parentNode.getY());
 
-				return backNode;
+				currentNode.setMaxY(parentNode.getMaxY());
+				currentNode.setMinY(parentNode.getMinY());
 			} else {
-				this.isBacktracking = false;
+				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
+				currentNode.setMaxY(parentNode.getMaxY());
+				currentNode.setMinY(parentNode.getMinY());
+				Integer setterY = (currentNode.getMaxY() + currentNode.getMinY()) / 2;
+				currentNode.setY(setterY);
 			}
 		}
-
-		// スタックが空で、まだ探索していない根ノードがある場合
-		while (this.dfsStack.isEmpty() && this.currentRootIndex < this.rootList.size()) {
-			this.currentRootIndex++;
-			if (this.currentRootIndex < this.rootList.size()) {
-				Integer nextRoot = this.rootList.get(this.currentRootIndex);
-				if (!isVisited(nextRoot)) {
-					this.dfsStack.add(nextRoot);
-					// 新しい根ノードの場合は訪問経路をリセット
-					this.visitPath.clear();
-				}
-			}
-		}
-
-		// スタックが空の場合、探索終了
-		if (this.dfsStack.isEmpty()) {
-			return null;
-		}
-
-		// スタックから次のノードを取得
-		Integer currentNode = this.dfsStack.remove(this.dfsStack.size() - 1);
-
-		// 既に訪問済みの場合はスキップ
-		if (isVisited(currentNode)) {
-			return depthFirstSearch(); // 再帰的に次のノードを探索
-		}
-
-		// 現在のノードを訪問済みに設定
-		setVisited(currentNode, true);
-
-		// 訪問経路に追加
-		this.visitPath.add(currentNode);
-
-		// 子ノードを逆順でスタックにプッシュ（深さ優先の順序を保つため）
-		List<Integer> children = this.graphAdjacentList.get(currentNode);
-		boolean hasUnvisitedChildren = false;
-
-		if (children != null) {
-			for (int i = children.size() - 1; i >= 0; i--) {
-				Integer child = children.get(i);
-				if (!isVisited(child)) {
-					this.dfsStack.add(child);
-					hasUnvisitedChildren = true;
-				}
-			}
-		}
-
-		// 子ノードがない（葉ノード）または全ての子ノードが訪問済みの場合、戻り処理を開始
-		if (!hasUnvisitedChildren && this.dfsStack.isEmpty()) {
-			this.isBacktracking = true;
-		}
-
-		return currentNode;
 	}
 
 	/**
-	 * ノードが訪問済みかどうかを確認するヘルパーメソッド
+	 * 深さ優先探索をし、visitPathに経路を入れるメソッド
 	 */
-	private boolean isVisited(Integer nodeId) {
-		if (nodeId >= this.visitedNodeList.length) {
-			return false;
+	public void depthFirstSearch() {
+		// 訪問セットと経路リストを初期化
+		visitedNodeSet.clear();
+		visitPath = new ArrayList<Integer>();
+		// すべての根から深さ優先探索を実施
+		for (Integer rootId : rootList) {
+			dfs(rootId);
 		}
-		return this.visitedNodeList[nodeId] != null && this.visitedNodeList[nodeId];
 	}
 
 	/**
-	 * ノードの訪問状態を設定するヘルパーメソッド
+	 * 再帰関数を用いて深さ優先探索を行うメソッド
 	 */
-	private void setVisited(Integer nodeId, boolean visited) {
-		if (nodeId < this.visitedNodeList.length) {
-			this.visitedNodeList[nodeId] = visited;
+	private void dfs(Integer nodeId) {
+		if (visitedNodeSet.contains(nodeId)) {
+			return;
+		}
+		visitedNodeSet.add(nodeId);
+		visitPath.add(nodeId);
+		for (Integer childId : graphAdjacentList.get(nodeId)) {
+			dfs(childId);
+
 		}
 	}
 
@@ -377,6 +324,10 @@ public class ForestModel extends Object {
 
 	public List<Integer> getRootList() {
 		return this.rootList;
+	}
+
+	public  List<Integer> getvisitPath() {
+		return this.visitPath;
 	}
 
 }
