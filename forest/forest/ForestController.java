@@ -26,31 +26,49 @@ import java.awt.event.FocusListener;
  */
 public class ForestController extends MouseInputAdapter {
 
+	/*
+	 * 樹状整列のモデルを管理するためのインスタンス
+	 */
 	private ForestModel aModel;
 
+	/*
+	 * 樹状整列のビューを管理するためのインスタンス
+	 */
 	private ForestView aView;
 
+	/*
+	 * 樹状整列のフレームを管理するためのインスタンス
+	 */
 	private JFrame aFrame;
 
+	/*
+	 * 樹状整列のスクロールペインを管理するためのインスタンス
+	 */
 	private JScrollPane aScrollPane;
 
+	/*
+	 * ポップアップメニューを管理するためのインスタンス
+	 */
 	private JPopupMenu popupMenu;
 
-	private int animationDelay = 100; // アニメーション間隔（ミリ秒）
-
+	/*
+	 * アニメーションの速度を管理するための変数
+	 * デフォルトは100ミリ秒
+	 */
+	private int animationDelay = 100;
 
 	/**
 	 * 樹状整列のコントローラのインスタンスを生成するためのコンストラクタ
 	 */
 	public ForestController() {
 		System.out.println("Hello from ForestController!");
-		
+
 		initializePopupMenu();
 		setModel();
 		setView();
 		setFrame();
 
-		for (Integer nextNodeId: aModel.getvisitPath()){
+		for (Integer nextNodeId : aModel.getVisitPath()) {
 			try {
 				Thread.sleep(animationDelay);
 			} catch (InterruptedException e) {
@@ -61,6 +79,9 @@ public class ForestController extends MouseInputAdapter {
 		}
 	}
 
+	/*
+	 * マウスがクリックされた時に呼び出されるメソッド
+	 */
 	public void mouseClicked(MouseEvent aMouseEvent) {
 		if (SwingUtilities.isRightMouseButton(aMouseEvent)) {
 			// 右クリック時にポップアップメニューを表示
@@ -72,45 +93,17 @@ public class ForestController extends MouseInputAdapter {
 		}
 	}
 
-	public void mouseDragged(MouseEvent aMouseEvent) {
-
-	}
-
-	public void mouseEntered(MouseEvent aMouseEvent) {
-
-	}
-
-	public void mouseExited(MouseEvent aMouseEvent) {
-
-	}
-
-	public void mouseMoved(MouseEvent aMouseEvent) {
-
-	}
-
-	public void mousePressed(MouseEvent aMouseEvent) {
-
-	}
-
-	public void mouseReleased(MouseEvent aMouseEvent) {
-
-	}
-
-	public void mouseWeelMoved(MouseEvent aMouseEvent) {
-
-	}
-
 	/**
 	 * ポップアップメニューを初期化するメソッド
 	 */
 	private void initializePopupMenu() {
 		popupMenu = new JPopupMenu();
-		
+
 		// アニメーション速度設定パネル
 		JPanel speedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		JLabel speedLabel = new JLabel("速度(ms):");
 		JTextField speedField = new JTextField(String.valueOf(animationDelay), 8);
-		
+
 		// Enterキーで設定を適用
 		speedField.addKeyListener(new KeyListener() {
 			@Override
@@ -125,18 +118,23 @@ public class ForestController extends MouseInputAdapter {
 					});
 				}
 			}
+
 			@Override
-			public void keyReleased(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+			}
+
 			@Override
-			public void keyTyped(KeyEvent e) {}
+			public void keyTyped(KeyEvent e) {
+			}
 		});
-		
+
 		// フォーカスが外れた時の処理
 		speedField.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent e) {
 				// フォーカスを得た時は何もしない
 			}
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				// フォーカスを失った時に値を更新（メニューを閉じる必要はない）
@@ -146,13 +144,13 @@ public class ForestController extends MouseInputAdapter {
 				});
 			}
 		});
-		
+
 		speedPanel.add(speedLabel);
 		speedPanel.add(speedField);
 		popupMenu.add(speedPanel);
-		
+
 		popupMenu.addSeparator(); // 区切り線を追加
-		
+
 		// forest.txtメニューアイテム
 		JMenuItem forestItem = new JMenuItem("forest.txt");
 		forestItem.addActionListener(new ActionListener() {
@@ -162,7 +160,7 @@ public class ForestController extends MouseInputAdapter {
 			}
 		});
 		popupMenu.add(forestItem);
-		
+
 		// semilattice.txtメニューアイテム
 		JMenuItem semilatticeItem = new JMenuItem("semilattice.txt");
 		semilatticeItem.addActionListener(new ActionListener() {
@@ -172,7 +170,7 @@ public class ForestController extends MouseInputAdapter {
 			}
 		});
 		popupMenu.add(semilatticeItem);
-		
+
 		// tree.txtメニューアイテム
 		JMenuItem treeItem = new JMenuItem("tree.txt");
 		treeItem.addActionListener(new ActionListener() {
@@ -199,22 +197,20 @@ public class ForestController extends MouseInputAdapter {
 					// エラーダイアログを表示してからメニューを閉じる
 					javax.swing.SwingUtilities.invokeLater(() -> {
 						JOptionPane.showMessageDialog(
-							aFrame,
-							"1から5000の間の値を入力してください",
-							"入力エラー",
-							JOptionPane.ERROR_MESSAGE
-						);
+								aFrame,
+								"1から5000の間の値を入力してください",
+								"入力エラー",
+								JOptionPane.ERROR_MESSAGE);
 					});
 				}
 			} catch (NumberFormatException e) {
 				// エラーダイアログを表示してからメニューを閉じる
 				javax.swing.SwingUtilities.invokeLater(() -> {
 					JOptionPane.showMessageDialog(
-						aFrame,
-						"数値を入力してください",
-						"入力エラー",
-						JOptionPane.ERROR_MESSAGE
-					);
+							aFrame,
+							"数値を入力してください",
+							"入力エラー",
+							JOptionPane.ERROR_MESSAGE);
 				});
 			}
 		}
@@ -255,11 +251,11 @@ public class ForestController extends MouseInputAdapter {
 		if (this.aFrame != null) {
 			this.aFrame.dispose();
 		}
-		
+
 		// 新しいモデルを作成
 		ForestModel newModel = new ForestModel(filePath);
-		
-		if (filePath == "resource/data/semilattice.txt"){
+
+		if (filePath == "resource/data/semilattice.txt") {
 			Map<Integer, Node> nodeList = newModel.getNodeList();
 			Node criticalNode = nodeList.get(68);
 			System.out.println(criticalNode.getName());
@@ -270,14 +266,14 @@ public class ForestController extends MouseInputAdapter {
 		ForestView newView = new ForestView(newModel);
 		newView.addMouseListener(this);
 		newView.addMouseMotionListener(this);
-		
+
 		// 新しいスクロールペインを作成
 		JScrollPane newScrollPane = new JScrollPane(newView);
 		newScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		newScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		newScrollPane.getHorizontalScrollBar().setUnitIncrement(16);
 		newScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		
+
 		// 新しいフレームを作成
 		JFrame newFrame = new JFrame("Forest Viewer");
 		newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -285,16 +281,16 @@ public class ForestController extends MouseInputAdapter {
 		newFrame.setSize(800, 600);
 		newFrame.setLocationRelativeTo(null);
 		newFrame.setVisible(true);
-		
+
 		// 現在のフレームを新しいフレームに更新
 		this.aFrame = newFrame;
 		this.aModel = newModel;
 		this.aView = newView;
 		this.aScrollPane = newScrollPane;
-		
+
 		// 新しいウィンドウでアニメーションを実行
 		new Thread(() -> {
-			for (Integer nextNodeId : newModel.getvisitPath()) {
+			for (Integer nextNodeId : newModel.getVisitPath()) {
 				try {
 					Thread.sleep(animationDelay);
 				} catch (InterruptedException e) {
@@ -307,10 +303,16 @@ public class ForestController extends MouseInputAdapter {
 		}).start();
 	}
 
+	/**
+	 * モデルを設定するメソッド
+	 */
 	public void setModel() {
 		this.aModel = new ForestModel("resource/data/tree.txt");
 	}
 
+	/**
+	 * ビューを設定するメソッド
+	 */
 	public void setView() {
 		this.aView = new ForestView(this.aModel);
 		// マウスイベントリスナーを設定
@@ -318,18 +320,21 @@ public class ForestController extends MouseInputAdapter {
 		this.aView.addMouseMotionListener(this);
 	}
 
+	/**
+	 * フレームを設定するメソッド
+	 */
 	public void setFrame() {
 		// JScrollPaneを作成してForestViewをラップ
 		this.aScrollPane = new JScrollPane(this.aView);
-		
+
 		// スクロールポリシーを設定
 		this.aScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.aScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
+
 		// スクロール速度を調整
 		this.aScrollPane.getHorizontalScrollBar().setUnitIncrement(16);
 		this.aScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		
+
 		// JFrameを設定
 		this.aFrame = new JFrame("Forest Viewer");
 		this.aFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
