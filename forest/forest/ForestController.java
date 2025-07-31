@@ -55,13 +55,13 @@ public class ForestController extends MouseInputAdapter {
 	 * アニメーションの速度を管理するための変数
 	 * デフォルトは100ミリ秒
 	 */
-	private int animationDelay = 100;
+	private Integer animationDelay = 100;
 
 	/**
 	 * 樹状整列のコントローラのインスタンスを生成するためのコンストラクタ
 	 */
 	public ForestController() {
-		System.out.println("Hello from ForestController!");
+		// System.out.println("Hello from ForestController!");
 
 		initializePopupMenu();
 		setModel();
@@ -188,7 +188,7 @@ public class ForestController extends MouseInputAdapter {
 	private void updateAnimationSpeed(String input) {
 		if (input != null && !input.trim().isEmpty()) {
 			try {
-				int newDelay = Integer.parseInt(input.trim());
+				Integer newDelay = Integer.parseInt(input.trim());
 				if (newDelay >= 1 && newDelay <= 5000) {
 					animationDelay = newDelay;
 					// メニューの表示も更新
@@ -222,7 +222,7 @@ public class ForestController extends MouseInputAdapter {
 	private void updateAnimationSpeedSilent(String input) {
 		if (input != null && !input.trim().isEmpty()) {
 			try {
-				int newDelay = Integer.parseInt(input.trim());
+				Integer newDelay = Integer.parseInt(input.trim());
 				if (newDelay >= 1 && newDelay <= 5000) {
 					animationDelay = newDelay;
 					// メニューの表示も更新

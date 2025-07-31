@@ -28,18 +28,18 @@ public class ForestView extends JPanel {
 	/*
 	 * ノード間の横間隔を定義
 	 */
-	private static final int HORIZONTAL_SPACING = 25;
+	private static final Integer HORIZONTAL_SPACING = 25;
 
 	/*
 	 * ノード間の縦方向間隔を定義
 	 */
-	private static final int VERTICAL_SPACING = 2;
+	private static final Integer VERTICAL_SPACING = 2;
 
 	/**
 	 * 樹状整列のビューのインスタンスを生成し、引数として受け取ったモデルのインスタンスをmodelに束縛するコンストラクタ
 	 */
 	public ForestView(ForestModel aModel) {
-		System.out.println("Hello from ForestView!");
+		// System.out.println("Hello from ForestView!");
 
 		this.aModel = aModel;
 
@@ -71,10 +71,10 @@ public class ForestView extends JPanel {
 			}
 
 			// 全ノードの位置から必要な描画領域を正確に計算
-			int maxX = Integer.MIN_VALUE;
-			int maxY = Integer.MIN_VALUE;
-			int minX = Integer.MAX_VALUE;
-			int minY = Integer.MAX_VALUE;
+			Integer maxX = Integer.MIN_VALUE;
+			Integer maxY = Integer.MIN_VALUE;
+			Integer minX = Integer.MAX_VALUE;
+			Integer minY = Integer.MAX_VALUE;
 
 			for (Node node : nodeList.values()) {
 				// Nodeオブジェクトから事前計算されたサイズを取得
@@ -85,16 +85,16 @@ public class ForestView extends JPanel {
 				if (rectWidth == null || rectHeight == null) {
 					FontMetrics fm = getFontMetrics(NODE_FONT);
 					String nodeName = getNodeName(node);
-					int textWidth = fm.stringWidth(nodeName);
-					int textHeight = fm.getHeight();
-					int padding = 3;
+					Integer textWidth = fm.stringWidth(nodeName);
+					Integer textHeight = fm.getHeight();
+					Integer padding = 3;
 					rectWidth = textWidth + padding * 2;
 					rectHeight = textHeight + padding * 2;
 				}
 
 				// ノードの実際の描画位置
-				int nodeX = node.getX();
-				int nodeY = node.getY() + VERTICAL_SPACING;
+				Integer nodeX = node.getX();
+				Integer nodeY = node.getY() + VERTICAL_SPACING;
 
 				// ノードの範囲を更新
 				minX = Math.min(minX, nodeX);
@@ -109,8 +109,8 @@ public class ForestView extends JPanel {
 			}
 
 			// 実際に必要なサイズを計算（マージンなし、ノードの境界にぴったり）
-			int width = maxX - minX;
-			int height = maxY - minY;
+			Integer width = maxX - minX;
+			Integer height = maxY - minY;
 
 			// 最小サイズの制限を緩和
 			width = Math.max(100, width);
@@ -136,8 +136,8 @@ public class ForestView extends JPanel {
 				Map<Integer, Node> nodeList = aModel.getNodeList();
 				if (nodeList != null) {
 					// 最小座標を取得して描画位置を正規化
-					int minX = Integer.MAX_VALUE;
-					int minY = Integer.MAX_VALUE;
+					Integer minX = Integer.MAX_VALUE;
+					Integer minY = Integer.MAX_VALUE;
 
 					for (Node node : nodeList.values()) {
 						minX = Math.min(minX, node.getX());
@@ -145,8 +145,8 @@ public class ForestView extends JPanel {
 					}
 
 					// 最小座標を原点に調整するためのオフセット
-					final int offsetX = (minX != Integer.MAX_VALUE) ? -minX : 0;
-					final int offsetY = (minY != Integer.MAX_VALUE) ? -minY : 0;
+					final Integer offsetX = (minX != Integer.MAX_VALUE) ? -minX : 0;
+					final Integer offsetY = (minY != Integer.MAX_VALUE) ? -minY : 0;
 
 					// Graphics2Dに変換してオフセットを適用
 					Graphics2D g2d = (Graphics2D) g.create();
@@ -204,16 +204,16 @@ public class ForestView extends JPanel {
 				if (parentRectWidth == null || parentRectHeight == null) {
 					String parentName = getNodeName(parentNode);
 					FontMetrics fm = g2d.getFontMetrics();
-					int parentTextWidth = fm.stringWidth(parentName);
-					int parentTextHeight = fm.getHeight();
-					int padding = 3;
+					Integer parentTextWidth = fm.stringWidth(parentName);
+					Integer parentTextHeight = fm.getHeight();
+					Integer padding = 3;
 					parentRectWidth = parentTextWidth + padding * 2;
 					parentRectHeight = parentTextHeight + padding * 2;
 				}
 
 				// 親ノードの右端中央の座標
-				int parentX = parentNode.getX() + parentRectWidth;
-				int parentY = parentNode.getY() + VERTICAL_SPACING + parentRectHeight / 2;
+				Integer parentX = parentNode.getX() + parentRectWidth;
+				Integer parentY = parentNode.getY() + VERTICAL_SPACING + parentRectHeight / 2;
 
 				// 各子ノードとの間に線を描画
 				for (Integer childId : children) {
@@ -227,14 +227,14 @@ public class ForestView extends JPanel {
 					// サイズが設定されていない場合のフォールバック
 					if (childRectHeight == null) {
 						FontMetrics fm = g2d.getFontMetrics();
-						int childTextHeight = fm.getHeight();
-						int padding = 3;
+						Integer childTextHeight = fm.getHeight();
+						Integer padding = 3;
 						childRectHeight = childTextHeight + padding * 2;
 					}
 
 					// 子ノードの左端中央の座標（縦方向間隔を考慮）
-					int childX = childNode.getX();
-					int childY = childNode.getY() + VERTICAL_SPACING + childRectHeight / 2;
+					Integer childX = childNode.getX();
+					Integer childY = childNode.getY() + VERTICAL_SPACING + childRectHeight / 2;
 
 					// 親から子へ線を描画
 					g2d.drawLine(parentX, parentY, childX, childY);
@@ -269,15 +269,15 @@ public class ForestView extends JPanel {
 				return;
 
 			FontMetrics fm = getFontMetrics(NODE_FONT);
-			int padding = 3;
+			Integer padding = 3;
 
 			for (Node node : nodeList.values()) {
 				String nodeName = getNodeName(node);
-				int textWidth = fm.stringWidth(nodeName);
-				int textHeight = fm.getHeight();
+				Integer textWidth = fm.stringWidth(nodeName);
+				Integer textHeight = fm.getHeight();
 
-				int rectWidth = textWidth + padding * 2;
-				int rectHeight = textHeight + padding * 2;
+				Integer rectWidth = textWidth + padding * 2;
+				Integer rectHeight = textHeight + padding * 2;
 
 				// Nodeオブジェクトにサイズを設定
 				node.setRectWidth(rectWidth);
@@ -292,14 +292,14 @@ public class ForestView extends JPanel {
 	/**
 	 * ノード間の推奨間隔を取得するメソッド
 	 */
-	public int getHorizontalSpacing() {
+	public Integer getHorizontalSpacing() {
 		return HORIZONTAL_SPACING;
 	}
 
 	/**
 	 * 縦方向の間隔を取得するメソッド
 	 */
-	public int getVerticalSpacing() {
+	public Integer getVerticalSpacing() {
 		return VERTICAL_SPACING;
 	}
 
@@ -326,16 +326,16 @@ public class ForestView extends JPanel {
 
 		// サイズが設定されていない場合のフォールバック
 		if (rectWidth == null || rectHeight == null) {
-			int textWidth = fm.stringWidth(nodeName);
-			int textHeight = fm.getHeight();
-			int padding = 3;
+			Integer textWidth = fm.stringWidth(nodeName);
+			Integer textHeight = fm.getHeight();
+			Integer padding = 3;
 			rectWidth = textWidth + padding * 2;
 			rectHeight = textHeight + padding * 2;
 		}
 
 		// ノードの座標（縦方向間隔を考慮）
-		int x = node.getX();
-		int y = node.getY() + VERTICAL_SPACING;
+		Integer x = node.getX();
+		Integer y = node.getY() + VERTICAL_SPACING;
 
 		// 四角形を描画（背景）
 		g2d.setColor(Color.WHITE);
@@ -347,9 +347,9 @@ public class ForestView extends JPanel {
 
 		// 文字列を描画（中央配置）
 		g2d.setColor(Color.BLACK);
-		int textWidth = fm.stringWidth(nodeName);
-		int textX = x + (rectWidth - textWidth) / 2;
-		int textY = y + (rectHeight + fm.getAscent() - fm.getDescent()) / 2;
+		Integer textWidth = fm.stringWidth(nodeName);
+		Integer textX = x + (rectWidth - textWidth) / 2;
+		Integer textY = y + (rectHeight + fm.getAscent() - fm.getDescent()) / 2;
 		g2d.drawString(nodeName, textX, textY);
 	}
 

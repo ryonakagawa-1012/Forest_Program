@@ -56,7 +56,7 @@ public class ForestModel extends Object {
 	 * 樹状整列のロジックを処理するモデルのインスタンスを生成するコンストラクタ
 	 */
 	public ForestModel(String filePath) {
-		System.out.println("Hello from ForestModel!");
+		// System.out.println("Hello from ForestModel!");
 
 		initialize(filePath);
 	}
@@ -89,16 +89,16 @@ public class ForestModel extends Object {
 
 		makeNodeList();
 		makeGraphAdjacentList();
-		System.out.println("graphAdjacentList: " + this.graphAdjacentList);
+		// System.out.println("graphAdjacentList: " + this.graphAdjacentList);
 		makeRootList();
-		System.out.println("rootList: " + this.rootList);
+		// System.out.println("rootList: " + this.rootList);
 
 		addParentToNode();
 
 		// 深さ優先探索用の訪問セットを初期化
 		this.visitedNodeSet = new HashSet<>();
 		depthFirstSearch();
-		System.out.println("visitPath: " + this.visitPath);
+		// System.out.println("visitPath: " + this.visitPath);
 
 	}
 
@@ -263,7 +263,7 @@ public class ForestModel extends Object {
 			System.err.println("Error reading file: " + e.getMessage());
 		}
 
-		System.out.println("rootNodeNames: " + rootNodeNames);
+		// System.out.println("rootNodeNames: " + rootNodeNames);
 
 		// 根ノード名とノードIDを対応付け
 		for (Map.Entry<Integer, Node> entry : this.nodeList.entrySet()) {
@@ -294,9 +294,9 @@ public class ForestModel extends Object {
 	 * Nodeを操作するメソッド
 	 */
 	public void nextNode(Integer currentNodeId) {
-		System.out.print("Update: " + currentNodeId);
+		// System.out.print("Update: " + currentNodeId);
 		Node currentNode = nodeList.get(currentNodeId);
-		System.out.println(":" + currentNode.getName());
+		// System.out.println(":" + currentNode.getName());
 		Node prevNode = nodeList.get(this.prevNodeId);
 		// 初めての根ノードだったら
 		if (this.prevNodeId == null) {
