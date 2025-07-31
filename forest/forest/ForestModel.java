@@ -250,25 +250,63 @@ public class ForestModel extends Object {
 	/**
 	 * Nodeを操作するメソッド
 	 */
-	public void nextNode(Integer nodeId) {
-		System.out.println(nodeId);
-		Node currentNode = nodeList.get(nodeId);
-
+	public void nextNode(Integer currentNodeId) {
+		System.out.println(currentNodeId);
+		Node currentNode = nodeList.get(currentNodeId);
+		Node prevNode = nodeList.get(this.prevNodeId);
+		// 初めての根ノードだったら
 		if (this.prevNodeId == null) {
 			currentNode.setY(0);
-			prevNodeId = nodeId;
+			
 		} else {
 			Integer parentNodeId = currentNode.getParentId();
 			Node parentNode = nodeList.get(parentNodeId);
-			if (this.rootList.contains(nodeId)) {
-				currentNode.setX(0);
-			}
-			if (prevNodeId.equals(parentNodeId)) {
-				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
-				currentNode.setY(parentNode.getY());
 
-				currentNode.setMaxY(parentNode.getMaxY());
-				currentNode.setMinY(parentNode.getMinY());
+			//　根ノードだったら
+			if (this.rootList.contains(currentNodeId)) {
+				currentNode.setX(0);
+				
+				//子ノードが全て探索済みならば
+				forelse: {
+					Integer maxY = 0;
+					Integer minY = Integer.MAX_VALUE;
+					for (Integer childNodeId: graphAdjacentList.get(currentNodeId)) {
+						Node childNode = nodeList.get(childNodeId);
+						if (!childNode.getIsPassed()){
+							break forelse;
+						}
+
+						maxY = Math.max(maxY, childNode.getY());
+						minY = Math.min(minY, childNode.getY());
+					}
+					currentNode.setY((maxY+minY)/2);
+					this.prevNodeId = currentNodeId;
+					return;
+				}
+				Integer nextY = prevNode.getMaxY()+2;
+				currentNode.setMaxY(nextY);
+				currentNode.setY(nextY);
+			} else if (prevNodeId.equals(parentNodeId)) {
+				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
+				
+				Integer childMaxY = parentNode.getY();
+				Boolean isOncePassed = false;
+				// 親ノードの訪問済み子ノードの中で最大のY座標を求める
+				for (Integer childNodeId: graphAdjacentList.get(parentNodeId)) {
+					Node childNode = nodeList.get(childNodeId);
+					if (childNode.getIsPassed()){
+						childMaxY = Math.max(childMaxY, childNode.getY());
+						isOncePassed = true;
+					}
+				}
+				Integer gap = 0;
+				if (isOncePassed){
+					gap = prevNode.getRectHeight() + 2;
+				}
+				Integer nextY = childMaxY + gap;
+				currentNode.setY(nextY);
+				currentNode.setMaxY(nextY);
+				currentNode.setIsPassed(true);
 			} else {
 				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
 				currentNode.setMaxY(parentNode.getMaxY());
@@ -277,6 +315,8 @@ public class ForestModel extends Object {
 				currentNode.setY(setterY);
 			}
 		}
+
+		this.prevNodeId = currentNodeId;
 	}
 
 	/**
@@ -303,7 +343,7 @@ public class ForestModel extends Object {
 		visitPath.add(nodeId);
 		for (Integer childId : graphAdjacentList.get(nodeId)) {
 			dfs(childId);
-
+			visitPath.add(nodeId);
 		}
 	}
 
