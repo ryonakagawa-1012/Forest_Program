@@ -129,6 +129,11 @@ public class ForestController extends MouseInputAdapter {
 	 * 指定されたファイルパスで新しいウィンドウを作成するメソッド
 	 */
 	private void createNewWindow(String filePath) {
+		// 元のウィンドウを閉じる
+		if (this.aFrame != null) {
+			this.aFrame.dispose();
+		}
+		
 		// 新しいモデルを作成
 		ForestModel newModel = new ForestModel(filePath);
 		
@@ -146,11 +151,17 @@ public class ForestController extends MouseInputAdapter {
 		
 		// 新しいフレームを作成
 		JFrame newFrame = new JFrame("Forest Viewer - " + filePath);
-		newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		newFrame.add(newScrollPane);
 		newFrame.setSize(800, 600);
 		newFrame.setLocationRelativeTo(null);
 		newFrame.setVisible(true);
+		
+		// 現在のフレームを新しいフレームに更新
+		this.aFrame = newFrame;
+		this.aModel = newModel;
+		this.aView = newView;
+		this.aScrollPane = newScrollPane;
 		
 		// 新しいウィンドウでアニメーションを実行
 		new Thread(() -> {
