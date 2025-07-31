@@ -60,7 +60,28 @@ public class ForestModel extends Object {
 	 * 樹状整列のモデルを初期化するメソッド
 	 */
 	public void initialize(String filePath) {
+		// まず通常のファイルパスを試す
 		this.inputFile = new File(filePath);
+		
+		// ファイルが存在しない場合、アプリケーション内のパスを試す
+		if (!this.inputFile.exists()) {
+			// 実行可能JARの場所を取得
+			String jarPath = getJarPath();
+			if (jarPath != null) {
+				File appResourceFile = new File(jarPath, filePath);
+				if (appResourceFile.exists()) {
+					this.inputFile = appResourceFile;
+				}
+			}
+		}
+		
+		// それでも見つからない場合はクラスパスから読み込みを試す
+		if (!this.inputFile.exists()) {
+			// エラーメッセージを出力
+			System.err.println("Warning: Could not find file: " + filePath);
+			System.err.println("Tried: " + this.inputFile.getAbsolutePath());
+		}
+		
 		makeNodeList();
 		makeGraphAdjacentList();
 		System.out.println("graphAdjacentList: " + this.graphAdjacentList);
@@ -74,6 +95,23 @@ public class ForestModel extends Object {
 		depthFirstSearch();
 		System.out.println("visitPath: " + this.visitPath);
 
+	}
+
+	/**
+	 * 実行中のJARファイルのパスを取得するメソッド
+	 */
+	private String getJarPath() {
+		try {
+			String classPath = ForestModel.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			File jarFile = new File(classPath);
+			if (jarFile.isFile() && jarFile.getName().endsWith(".jar")) {
+				// JARファイルの親ディレクトリを返す
+				return jarFile.getParent();
+			}
+		} catch (Exception e) {
+			System.err.println("Could not determine JAR path: " + e.getMessage());
+		}
+		return null;
 	}
 
 	/**

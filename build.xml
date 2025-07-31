@@ -11,12 +11,21 @@
 	<property name="copyright" value="Copyright 2008-2017 AOKI Atsushi. All Rights Reserved." />
 	<property name="zipname" value="${ant.project.name}" />
 
+	<property name="main.class" value="forest.Example" />
+	<property name="app.version" value="1.0" />
+	<property name="mac.bundle.id" value="com.example.forest" />
+	<property name="build.dir" value="${basedir}/build" />
+
 	<target name="all" depends="jar" description="build all">
 		<exec executable="date" spawn="false" />
 	</target>
 
 	<target name="prepare" depends="" description="prepare to compile">
 		<mkdir dir="${destdir}" />
+		<!-- resourceディレクトリ構造を保持してコピー -->
+		<copy todir="${destdir}/resource">
+			<fileset dir="resource" />
+		</copy>
 		<exec executable="date" spawn="false" />
 	</target>
 
@@ -49,7 +58,51 @@
 		<exec executable="date" spawn="false" />
 	</target>
 
+	<target name="package" depends="jar" description="package the application for macOS using jpackage">
+		<echo>Packaging for macOS...</echo>
+		<mkdir dir="${build.dir}" />
+		
+		<!-- アプリケーション用の一時ディレクトリを作成 -->
+		<mkdir dir="${build.dir}/app-staging" />
+		
+		<!-- JARファイルをコピー -->
+		<copy file="${package}.jar" todir="${build.dir}/app-staging" />
+		
+		<!-- resourceディレクトリをアプリ外部にもコピー（外部ファイルアクセス用） -->
+		<copy todir="${build.dir}/app-staging/resource">
+			<fileset dir="resource" />
+		</copy>
+		
+		<exec executable="jpackage" failonerror="true">
+			<arg value="--type" />
+			<arg value="app-image" />
+			<arg value="--dest" />
+			<arg path="${build.dir}" />
+			<arg value="--name" />
+			<arg value="${ant.project.name}" />
+			<arg value="--input" />
+			<arg path="${build.dir}/app-staging" />
+			<arg value="--main-jar" />
+			<arg value="${package}.jar" />
+			<arg value="--main-class" />
+			<arg value="${main.class}" />
+			<arg value="--app-version" />
+			<arg value="${app.version}" />
+			<arg value="--copyright" />
+			<arg value="${copyright}" />
+			<arg value="--mac-package-identifier" />
+			<arg value="${mac.bundle.id}" />
+			<arg value="--icon" />
+			<arg path="${basedir}/resource/Forest.icns" />
+			</exec>
+		<echo>Successfully created ${ant.project.name}.app in '${build.dir}' directory.</echo>
+		
+		<!-- 一時ディレクトリを削除 -->
+		<delete dir="${build.dir}/app-staging" />
+	</target>
+
 	<target name="clean" description="cleaning">
+		<delete dir="${build.dir}" />
 		<delete dir="${destdir}" />
 		<delete file="${package}.jar" />
 		<delete dir="${docdir}" />
@@ -110,7 +163,7 @@
 			linksource="yes"
 			additionalparam="-J-Dfile.encoding=UTF-8"
 			access="private">
-			<doctitle>${doc-title}</doctitle>
+			<doctitle>${ant.project.name} Documentation</doctitle>
 			<bottom>${copyright}</bottom>
 			<classpath>
 				<pathelement location="." />
