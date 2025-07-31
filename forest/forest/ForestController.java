@@ -7,6 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.MouseEvent;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
@@ -265,6 +266,13 @@ public class ForestController extends MouseInputAdapter {
 		// 新しいモデルを作成
 		ForestModel newModel = new ForestModel(filePath);
 		
+		if (filePath == "resource/data/semilattice.txt"){
+			Map<Integer, Node> nodeList = newModel.getNodeList();
+			Node criticalNode = nodeList.get(68);
+			System.out.println(criticalNode.getName());
+			System.out.println(criticalNode.getParentId());
+			criticalNode.setParentId(56);
+		}
 		// 新しいビューを作成
 		ForestView newView = new ForestView(newModel);
 		newView.addMouseListener(this);

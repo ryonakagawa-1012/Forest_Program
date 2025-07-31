@@ -242,7 +242,8 @@ public class ForestModel extends Object {
 		for (Map.Entry<Integer, List<Integer>> entry : this.graphAdjacentList.entrySet()){
 			for (Integer child : entry.getValue()){
 				Node childNode = nodeList.get(child);
-				childNode.setParentId(entry.getKey());
+				if (childNode.getParentId() == null)
+					childNode.setParentId(entry.getKey());
 			}
 		}
 	}
@@ -251,8 +252,9 @@ public class ForestModel extends Object {
 	 * Nodeを操作するメソッド
 	 */
 	public void nextNode(Integer currentNodeId) {
-		System.out.println("Update: "+currentNodeId);
+		System.out.print("Update: "+currentNodeId);
 		Node currentNode = nodeList.get(currentNodeId);
+		System.out.println(":"+currentNode.getName());
 		Node prevNode = nodeList.get(this.prevNodeId);
 		// 初めての根ノードだったら
 		if (this.prevNodeId == null) {
@@ -292,12 +294,12 @@ public class ForestModel extends Object {
 				currentNode.setY(nextY);
 
 			} else if (prevNodeId.equals(parentNodeId)) {
-				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
+				currentNode.setX(prevNode.getX() + prevNode.getRectWidth() + 25);
 				
-				Integer childMaxY = parentNode.getY();
+				Integer childMaxY = prevNode.getY();
 				Boolean isOncePassed = false;
 				// 親ノードの訪問済み子ノードの中で最大のY座標を求める
-				for (Integer childNodeId: graphAdjacentList.get(parentNodeId)) {
+				for (Integer childNodeId: graphAdjacentList.get(prevNodeId)) {
 					Node childNode = nodeList.get(childNodeId);
 					if (childNode.getIsPassed()){
 						childMaxY = Math.max(childMaxY, childNode.getMaxY());
