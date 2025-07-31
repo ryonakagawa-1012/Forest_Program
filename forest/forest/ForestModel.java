@@ -40,6 +40,8 @@ public class ForestModel extends Object {
 
 	private List<Integer> visitPath;
 
+	private Integer prevNodeId;
+
 	/*
 	 * 入力ファイルのパスを保持する変数
 	 */
@@ -252,20 +254,23 @@ public class ForestModel extends Object {
 		System.out.println(nodeId);
 		Node currentNode = nodeList.get(nodeId);
 
-		if (rootList.get(0) == nodeId) {
+		if (this.prevNodeId == null) {
 			currentNode.setY(0);
+			prevNodeId = nodeId;
 		} else {
-			Node parentNode = nodeList.get(currentNode.getParentId());
+			Integer parentNodeId = currentNode.getParentId();
+			Node parentNode = nodeList.get(parentNodeId);
 			if (this.rootList.contains(nodeId)) {
 				currentNode.setX(0);
 			}
-			if (true) {
+			if (prevNodeId.equals(parentNodeId)) {
 				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
 				currentNode.setY(parentNode.getY());
 
 				currentNode.setMaxY(parentNode.getMaxY());
 				currentNode.setMinY(parentNode.getMinY());
 			} else {
+				currentNode.setX(parentNode.getX() + parentNode.getRectWidth() + 25);
 				currentNode.setMaxY(parentNode.getMaxY());
 				currentNode.setMinY(parentNode.getMinY());
 				Integer setterY = (currentNode.getMaxY() + currentNode.getMinY()) / 2;
