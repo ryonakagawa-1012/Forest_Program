@@ -36,6 +36,11 @@ public class Node extends Object {
 	private Integer minY;
 
 	/*
+	 * 深さ優先探索において、通過したかどうかを判定する変数
+	 */
+	private Boolean isPassed = false;
+
+	/*
 	 * ノードの横方向の辺の長さを保存する変数
 	 */
 	private Integer rectWidth;
@@ -52,8 +57,8 @@ public class Node extends Object {
 		this.x = x;
 		this.y = y;
 		this.name = name;
-		this.maxY = y; 
-		this.minY = y; 
+		this.maxY = 0; 
+		this.minY = 0; 
 	}
 
 	/**
@@ -163,6 +168,14 @@ public class Node extends Object {
 	 */
 	public void setParentId(Integer setterParentId) {
 		this.parentId = setterParentId;
+	}
+
+	public Boolean getIsPassed() {
+		return this.isPassed;
+	}
+
+	public void setIsPassed(Boolean setterIsPassed) {
+		this.isPassed = setterIsPassed;
 	}
 
 }
