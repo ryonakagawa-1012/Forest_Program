@@ -9,7 +9,7 @@
 	<property name="docdir" value="./JavaDoc" />
 	<property name="instdir" value="./${ant.project.name}.app/Contents/Resources/Java" />
 	<property name="copyright" value="Copyright 2008-2017 AOKI Atsushi. All Rights Reserved." />
-	<property name="zipname" value="${ant.project.name}" />
+	<property name="zipname" value="${ant.project.name}_Program" />
 
 	<property name="main.class" value="forest.Example" />
 	<property name="app.version" value="1.0" />
