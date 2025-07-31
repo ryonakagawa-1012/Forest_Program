@@ -376,6 +376,17 @@ public class ForestModel extends Object {
 	 * 引数で受け取った座標が、ノードをクリックしているかを判定し、クリックしていたらNodeのprintNodeNameを呼び出すメソッド
 	 */
 	public void nodeClicked(Point aPoint) {
+		for (Node node: nodeList.values()) {
+			Integer x = node.getX();
+			Integer xMax = x + node.getRectWidth();
+			Integer y = node.getY();
+			Integer yMax = y + node.getRectHeight();
+
+			//　クリックされた座標がノード内だったら
+			if (x <= aPoint.x && aPoint.x <= xMax && y <= aPoint.y && aPoint.y <= yMax){
+				System.out.println("node clicked : "+node.getName());
+			}
+		}
 
 	}
 
