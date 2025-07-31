@@ -194,13 +194,6 @@ public class ForestController extends MouseInputAdapter {
 					animationDelay = newDelay;
 					// メニューの表示も更新
 					updatePopupMenu();
-					// 確認メッセージを表示（オプション）
-					// JOptionPane.showMessageDialog(
-					//     aFrame,
-					//     "アニメーション速度を " + animationDelay + "ms に設定しました",
-					//     "設定完了",
-					//     JOptionPane.INFORMATION_MESSAGE
-					// );
 				} else {
 					// エラーダイアログを表示してからメニューを閉じる
 					javax.swing.SwingUtilities.invokeLater(() -> {
@@ -278,7 +271,7 @@ public class ForestController extends MouseInputAdapter {
 		newScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		
 		// 新しいフレームを作成
-		JFrame newFrame = new JFrame("Forest Viewer - " + filePath);
+		JFrame newFrame = new JFrame("Forest Viewer");
 		newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		newFrame.add(newScrollPane);
 		newFrame.setSize(800, 600);
