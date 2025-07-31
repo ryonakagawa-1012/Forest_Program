@@ -37,9 +37,14 @@ public class ForestModel extends Object {
 	 */
 	private Set<Integer> visitedNodeSet;
 
-
+	/*
+	 * 深さ優先探索で探索したノードを順に保持する配列
+	 */
 	private List<Integer> visitPath;
 
+	/*
+	 * nextNodeにおいて、前に探索したノードのIDを保持する変数
+	 */
 	private Integer prevNodeId;
 
 	/*
@@ -51,7 +56,7 @@ public class ForestModel extends Object {
 	 * 樹状整列のロジックを処理するモデルのインスタンスを生成するコンストラクタ
 	 */
 	public ForestModel(String filePath) {
-		System.out.println("Hello from ForestModel!");
+		// System.out.println("Hello from ForestModel!");
 
 		initialize(filePath);
 	}
@@ -62,7 +67,7 @@ public class ForestModel extends Object {
 	public void initialize(String filePath) {
 		// まず通常のファイルパスを試す
 		this.inputFile = new File(filePath);
-		
+
 		// ファイルが存在しない場合、アプリケーション内のパスを試す
 		if (!this.inputFile.exists()) {
 			// 実行可能JARの場所を取得
@@ -74,26 +79,26 @@ public class ForestModel extends Object {
 				}
 			}
 		}
-		
+
 		// それでも見つからない場合はクラスパスから読み込みを試す
 		if (!this.inputFile.exists()) {
 			// エラーメッセージを出力
 			System.err.println("Warning: Could not find file: " + filePath);
 			System.err.println("Tried: " + this.inputFile.getAbsolutePath());
 		}
-		
+
 		makeNodeList();
 		makeGraphAdjacentList();
-		System.out.println("graphAdjacentList: " + this.graphAdjacentList);
+		// System.out.println("graphAdjacentList: " + this.graphAdjacentList);
 		makeRootList();
-		System.out.println("rootList: " + this.rootList);
+		// System.out.println("rootList: " + this.rootList);
 
 		addParentToNode();
 
 		// 深さ優先探索用の訪問セットを初期化
 		this.visitedNodeSet = new HashSet<>();
 		depthFirstSearch();
-		System.out.println("visitPath: " + this.visitPath);
+		// System.out.println("visitPath: " + this.visitPath);
 
 	}
 
@@ -258,7 +263,7 @@ public class ForestModel extends Object {
 			System.err.println("Error reading file: " + e.getMessage());
 		}
 
-		System.out.println("rootNodeNames: " + rootNodeNames);
+		// System.out.println("rootNodeNames: " + rootNodeNames);
 
 		// 根ノード名とノードIDを対応付け
 		for (Map.Entry<Integer, Node> entry : this.nodeList.entrySet()) {
@@ -272,13 +277,12 @@ public class ForestModel extends Object {
 
 	}
 
-
 	/*
 	 * Nodeに親のIdを登録するメソッド
 	 */
-	public void addParentToNode(){
-		for (Map.Entry<Integer, List<Integer>> entry : this.graphAdjacentList.entrySet()){
-			for (Integer child : entry.getValue()){
+	public void addParentToNode() {
+		for (Map.Entry<Integer, List<Integer>> entry : this.graphAdjacentList.entrySet()) {
+			for (Integer child : entry.getValue()) {
 				Node childNode = nodeList.get(child);
 				if (childNode.getParentId() == null)
 					childNode.setParentId(entry.getKey());
@@ -290,30 +294,30 @@ public class ForestModel extends Object {
 	 * Nodeを操作するメソッド
 	 */
 	public void nextNode(Integer currentNodeId) {
-		System.out.print("Update: "+currentNodeId);
+		// System.out.print("Update: " + currentNodeId);
 		Node currentNode = nodeList.get(currentNodeId);
-		System.out.println(":"+currentNode.getName());
+		// System.out.println(":" + currentNode.getName());
 		Node prevNode = nodeList.get(this.prevNodeId);
 		// 初めての根ノードだったら
 		if (this.prevNodeId == null) {
 			currentNode.setY(0);
-			
+
 		} else {
 			Integer parentNodeId = currentNode.getParentId();
 			Node parentNode = nodeList.get(parentNodeId);
 
-			//　根ノードだったら
+			// 根ノードだったら
 			if (this.rootList.contains(currentNodeId)) {
 				currentNode.setX(0);
-				
-				//子ノードが全て探索済みならば
+
+				// 子ノードが全て探索済みならば
 				forelse: {
 					Integer maxY = 0;
 					Integer minY = Integer.MAX_VALUE;
 					Integer maxMaxY = 0;
-					for (Integer childNodeId: graphAdjacentList.get(currentNodeId)) {
+					for (Integer childNodeId : graphAdjacentList.get(currentNodeId)) {
 						Node childNode = nodeList.get(childNodeId);
-						if (!childNode.getIsPassed()){
+						if (!childNode.getIsPassed()) {
 							break forelse;
 						}
 
@@ -321,31 +325,31 @@ public class ForestModel extends Object {
 						minY = Math.min(minY, childNode.getY());
 						maxMaxY = Math.max(maxY, childNode.getMaxY());
 					}
-					Integer nextY = (maxY+minY)/2;
+					Integer nextY = (maxY + minY) / 2;
 					currentNode.setY(nextY);
 					currentNode.setMaxY(maxMaxY);
 					this.prevNodeId = currentNodeId;
 					return;
 				}
-				Integer nextY = prevNode.getMaxY() + prevNode.getRectHeight()+2;
+				Integer nextY = prevNode.getMaxY() + prevNode.getRectHeight() + 2;
 				currentNode.setMaxY(nextY);
 				currentNode.setY(nextY);
 
 			} else if (prevNodeId.equals(parentNodeId)) {
 				currentNode.setX(prevNode.getX() + prevNode.getRectWidth() + 25);
-				
+
 				Integer childMaxY = prevNode.getY();
 				Boolean isOncePassed = false;
 				// 親ノードの訪問済み子ノードの中で最大のY座標を求める
-				for (Integer childNodeId: graphAdjacentList.get(prevNodeId)) {
+				for (Integer childNodeId : graphAdjacentList.get(prevNodeId)) {
 					Node childNode = nodeList.get(childNodeId);
-					if (childNode.getIsPassed()){
+					if (childNode.getIsPassed()) {
 						childMaxY = Math.max(childMaxY, childNode.getMaxY());
 						isOncePassed = true;
 					}
 				}
 				Integer gap = 0;
-				if (isOncePassed){
+				if (isOncePassed) {
 					gap = prevNode.getRectHeight() + 2;
 				}
 				Integer nextY = childMaxY + gap;
@@ -360,9 +364,9 @@ public class ForestModel extends Object {
 					Integer maxY = 0;
 					Integer minY = Integer.MAX_VALUE;
 					Integer maxMaxY = 0;
-					for (Integer childNodeId: graphAdjacentList.get(currentNodeId)) {
+					for (Integer childNodeId : graphAdjacentList.get(currentNodeId)) {
 						Node childNode = nodeList.get(childNodeId);
-						if (!childNode.getIsPassed()){
+						if (!childNode.getIsPassed()) {
 							break forelse;
 						}
 
@@ -370,14 +374,10 @@ public class ForestModel extends Object {
 						minY = Math.min(minY, childNode.getY());
 						maxMaxY = Math.max(maxY, childNode.getMaxY());
 					}
-					Integer nextY = (maxY+minY)/2;
+					Integer nextY = (maxY + minY) / 2;
 					currentNode.setY(nextY);
 					currentNode.setMaxY(maxMaxY);
 				}
-				// currentNode.setMaxY(parentNode.getMaxY());
-				// currentNode.setMinY(parentNode.getMinY());
-				// Integer setterY = (currentNode.getMaxY() + currentNode.getMinY()) / 2;
-				// currentNode.setY(setterY);
 			}
 		}
 
@@ -416,33 +416,42 @@ public class ForestModel extends Object {
 	 * 引数で受け取った座標が、ノードをクリックしているかを判定し、クリックしていたらNodeのprintNodeNameを呼び出すメソッド
 	 */
 	public void nodeClicked(Point aPoint) {
-		for (Node node: nodeList.values()) {
+		for (Node node : nodeList.values()) {
 			Integer x = node.getX();
 			Integer xMax = x + node.getRectWidth();
 			Integer y = node.getY();
 			Integer yMax = y + node.getRectHeight();
 
-			//　クリックされた座標がノード内だったら
-			if (x <= aPoint.x && aPoint.x <= xMax && y <= aPoint.y && aPoint.y <= yMax){
-				System.out.println("node clicked: "+node.getName());
+			// クリックされた座標がノード内だったら
+			if (x <= aPoint.x && aPoint.x <= xMax && y <= aPoint.y && aPoint.y <= yMax) {
+				System.out.println("node clicked: " + node.getName());
 			}
 		}
 
 	}
 
+	/**
+	 * getGraphAdjacentListを返すメソッド
+	 */
 	public Map<Integer, List<Integer>> getGraphAdjacentList() {
 		return this.graphAdjacentList;
 	}
 
+	/**
+	 * getNodeListを返すメソッド
+	 */
 	public Map<Integer, Node> getNodeList() {
 		return this.nodeList;
 	}
 
+	/**
+	 * getRootListを返すメソッド
+	 */
 	public List<Integer> getRootList() {
 		return this.rootList;
 	}
 
-	public  List<Integer> getvisitPath() {
+	public List<Integer> getVisitPath() {
 		return this.visitPath;
 	}
 

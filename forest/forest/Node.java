@@ -57,8 +57,8 @@ public class Node extends Object {
 		this.x = x;
 		this.y = y;
 		this.name = name;
-		this.maxY = 0; 
-		this.minY = 0; 
+		this.maxY = 0;
+		this.minY = 0;
 	}
 
 	/**
