@@ -251,7 +251,7 @@ public class ForestModel extends Object {
 	 * Nodeを操作するメソッド
 	 */
 	public void nextNode(Integer currentNodeId) {
-		System.out.println("Update: "currentNodeId);
+		System.out.println("Update: "+currentNodeId);
 		Node currentNode = nodeList.get(currentNodeId);
 		Node prevNode = nodeList.get(this.prevNodeId);
 		// 初めての根ノードだったら
