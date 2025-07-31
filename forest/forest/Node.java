@@ -170,10 +170,16 @@ public class Node extends Object {
 		this.parentId = setterParentId;
 	}
 
+	/**
+	 * ノードが通過したかどうかを返すメソッド
+	 */
 	public Boolean getIsPassed() {
 		return this.isPassed;
 	}
 
+	/**
+	 * ノードが通過したかどうかを引数の値に変更するメソッド
+	 */
 	public void setIsPassed(Boolean setterIsPassed) {
 		this.isPassed = setterIsPassed;
 	}
