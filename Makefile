@@ -21,6 +21,9 @@ semilattice: clean
 install:
 	$(ANT) install
 
+app:
+	$(ANT) package
+
 doc:
 	$(ANT) doc
 
